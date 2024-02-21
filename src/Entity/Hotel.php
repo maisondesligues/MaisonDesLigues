@@ -13,9 +13,6 @@ class Hotel
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $pid = null;
-
     #[ORM\Column(length: 255)]
     private ?string $pnom = null;
 
@@ -40,13 +37,6 @@ class Hotel
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function setPid(int $pid): static
-    {
-        $this->pid = $pid;
-
-        return $this;
     }
 
     public function getPnom(): ?string
