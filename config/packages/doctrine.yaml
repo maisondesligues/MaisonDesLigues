@@ -6,6 +6,17 @@ doctrine:
         # either here or in the DATABASE_URL env var (see .env file)
         #server_version: '16'
         use_savepoints: true
+        driver: 'pdo_mysql'
+        server_version: '5.7'
+        charset: utf8mb4'
+        default_table_options:
+            charset: utf8mb4
+            collate: utf8mb4-unicode_ci
+        dbname: '%env(DATABASE_NAME)%'
+        host: 'localhost:3306'
+        user: '%env(DATABASE_USER)%'
+        password: '%env(DATABASE_PWD)%'
+        
     orm:
         auto_generate_proxy_classes: true
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
