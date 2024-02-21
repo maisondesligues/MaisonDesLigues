@@ -17,7 +17,7 @@ class Hotel
     private ?string $pnom = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $adresse = null;
+    private ?string $adresse1 = null;
 
     #[ORM\Column(length: 255)]
     private ?string $adresse2 = null;
@@ -53,12 +53,12 @@ class Hotel
 
     public function getAdresse(): ?string
     {
-        return $this->adresse;
+        return $this->adresse1;
     }
 
     public function setAdresse(string $adresse): static
     {
-        $this->adresse = $adresse;
+        $this->adresse1 = $adresse;
 
         return $this;
     }
