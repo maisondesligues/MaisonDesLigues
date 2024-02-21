@@ -1,4 +1,4 @@
-
+/.env
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
@@ -9,3 +9,4 @@
 /vendor/
 ###< symfony/framework-bundle ###
 /nbproject/private/
+.env
