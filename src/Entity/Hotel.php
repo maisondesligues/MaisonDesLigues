@@ -19,7 +19,7 @@ class Hotel
     #[ORM\Column(length: 255)]
     private ?string $adresse1 = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $adresse2 = null;
 
     #[ORM\Column]
@@ -28,8 +28,8 @@ class Hotel
     #[ORM\Column(length: 255)]
     private ?string $ville = null;
 
-    #[ORM\Column]
-    private ?int $tel = null;
+    #[ORM\Column(length: 255)]
+    private ?string $tel = null;
 
     #[ORM\Column(length: 255)]
     private ?string $mail = null;
@@ -51,14 +51,14 @@ class Hotel
         return $this;
     }
 
-    public function getAdresse(): ?string
+    public function getAdresse1(): ?string
     {
         return $this->adresse1;
     }
 
-    public function setAdresse(string $adresse): static
+    public function setAdresse1(string $adresse1): static
     {
-        $this->adresse1 = $adresse;
+        $this->adresse1 = $adresse1;
 
         return $this;
     }
@@ -68,7 +68,7 @@ class Hotel
         return $this->adresse2;
     }
 
-    public function setAdresse2(string $adresse2): static
+    public function setAdresse2(?string $adresse2): static
     {
         $this->adresse2 = $adresse2;
 
@@ -99,12 +99,12 @@ class Hotel
         return $this;
     }
 
-    public function getTel(): ?int
+    public function getTel(): ?string
     {
         return $this->tel;
     }
 
-    public function setTel(int $tel): static
+    public function setTel(string $tel): static
     {
         $this->tel = $tel;
 
