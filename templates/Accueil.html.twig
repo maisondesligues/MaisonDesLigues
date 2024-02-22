@@ -1,4 +1,42 @@
 {% extends "base.html.twig" %}
 {% block content %}
-    <h1 class="text-red-800 text-6xl">Hello</h1>
+<body>
+    <!-- Bloc pour les ateliers proposés -->
+    <section class="p-6 bg-gray-100">
+        <h2 class="text-xl font-bold mb-4">Ateliers Proposés</h2>
+        <div class="space-y-4">
+            {% for atelier in ateliers %}
+                <div>
+                    <h3 class="font-semibold">{{ atelier.libelle }}</h3>
+                    <p>Nombre de places maximum : {{ atelier.nb_places_maxi }}</p>
+                    <!-- Supposition que chaque atelier peut avoir plusieurs thèmes -->
+                    {% for theme in atelier.themes %}
+                        <p>Thème : {{ theme.libelle }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Bloc pour les options d'hébergement -->
+    <section class="p-6">
+        <h2 class="text-xl font-bold mb-4">Options d'Hébergement</h2>
+        <div class="space-y-4">
+            {% for hotel in hotels %}
+                <div>
+                    <h3 class="font-semibold">{{ hotel.pnom }}</h3>
+                    <p>Adresse : {{ hotel.adresse1 }} {{ hotel.adresse2 }}, {{ hotel.cp }} {{ hotel.ville }}</p>
+                    <p>Tél : {{ hotel.tel }} | Mail : {{ hotel.mail }}</p>
+                    <!-- Supposition que chaque hôtel peut proposer plusieurs catégories de chambre -->
+                    {% for categorie in hotel.categories %}
+                        <p>Catégorie : {{ categorie.libelle_categorie }} - Tarif nuitée : X€</p>
+                        <!-- Le tarif devra être récupéré via une jointure ou une logique métier -->
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+</body>
+
+
 {% endblock %}
