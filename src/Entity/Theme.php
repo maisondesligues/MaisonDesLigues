@@ -16,6 +16,9 @@ class Theme
     #[ORM\Column(length: 255)]
     private ?string $libelle = null;
 
+    #[ORM\Column]
+    private ?int $idatelier = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -29,6 +32,18 @@ class Theme
     public function setLibelle(string $libelle): static
     {
         $this->libelle = $libelle;
+
+        return $this;
+    }
+
+    public function getIdatelier(): ?int
+    {
+        return $this->idatelier;
+    }
+
+    public function setIdatelier(int $idatelier): static
+    {
+        $this->idatelier = $idatelier;
 
         return $this;
     }
