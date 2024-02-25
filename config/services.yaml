@@ -4,7 +4,15 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-
+    dates_evenements: 'samedi 8 et dimanche 9 septembre 2023'
+    date_debut_hotel_reservation: 'vendredi 7 septembre 2023'
+    ibis_hotel_single_prix: 95
+    ibis_hotel_double_prix: 105
+    budget_hotel_single_prix: 70
+    budget_hotel_double_prix: 80
+    repas_accompagnant_prix: 38
+    inscription_congres_prix: 130
+    
 services:
     # default configuration for services in *this* file
     _defaults:
