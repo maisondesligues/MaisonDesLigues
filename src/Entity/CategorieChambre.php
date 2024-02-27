@@ -17,7 +17,7 @@ class CategorieChambre
     private ?string $libelleCategorie = null;
 
     #[ORM\OneToMany(mappedBy: 'categorieChambre', targetEntity: Proposer::class)]
-    private $tarifs;
+    private $propositions;
     
     public function getId(): ?int
     {

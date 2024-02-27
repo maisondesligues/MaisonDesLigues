@@ -14,6 +14,10 @@ parameters:
     inscription_congres_prix: 130
     
 services:
+    App\Service\AppParameters:
+        arguments:
+            $params: '@parameter_bag'
+        
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.

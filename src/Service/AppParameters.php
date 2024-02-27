@@ -1,5 +1,8 @@
 <?php
-namespace App\service;
+namespace App\Service;
+
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+
 
 /*
  * Obtiens les paramètres de l'application

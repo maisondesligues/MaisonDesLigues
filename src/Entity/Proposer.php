@@ -16,11 +16,11 @@ class Proposer
     #[ORM\Column]
     private ?int $tarifNuite = null;
     
-    #[ORM\ManyToOne(inversedBy: 'tarifs', targetEntity: Hotel::class)]
+    #[ORM\ManyToOne(inversedBy: 'propositions', targetEntity: Hotel::class)]
     #[ORM\JoinColumn(referencedColumnName: 'id', name: 'hotel_id')]
     private $hotels;
     
-    #[ORM\ManyToOne(inversedBy: 'tarifs', targetEntity: CategorieChambre::class)]
+    #[ORM\ManyToOne(inversedBy: 'propositions', targetEntity: CategorieChambre::class)]
     #[ORM\JoinColumn(referencedColumnName: 'id', name: 'categorie_id')]
     private $categorieChambre;
 
@@ -39,5 +39,13 @@ class Proposer
         $this->tarifNuite = $tarifNuite;
 
         return $this;
+    }
+    
+    public function getHotels() {
+        return $this->hotels;
+    }
+    
+    public function getCategorieChambre() {
+        return $this->categorieChambre;
     }
 }

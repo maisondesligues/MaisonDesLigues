@@ -6,8 +6,8 @@ use App\Repository\HotelRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: HotelRepository::class)]
-class Hotel
-{
+class Hotel {
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -35,92 +35,77 @@ class Hotel
     private ?string $mail = null;
 
     #[ORM\OneToMany(mappedBy: 'hotel', targetEntity: Proposer::class)]
-    private $tarifs;
+    public $propositions;
 
-    public function getId(): ?int
-    {
+    public function getId(): ?int {
         return $this->id;
     }
 
-    public function getPnom(): ?string
-    {
+    public function getPnom(): ?string {
         return $this->pnom;
     }
 
-    public function setPnom(string $pnom): static
-    {
+    public function setPnom(string $pnom): static {
         $this->pnom = $pnom;
 
         return $this;
     }
 
-    public function getAdresse1(): ?string
-    {
+    public function getAdresse1(): ?string {
         return $this->adresse1;
     }
 
-    public function setAdresse1(string $adresse1): static
-    {
+    public function setAdresse1(string $adresse1): static {
         $this->adresse1 = $adresse1;
 
         return $this;
     }
 
-    public function getAdresse2(): ?string
-    {
+    public function getAdresse2(): ?string {
         return $this->adresse2;
     }
 
-    public function setAdresse2(?string $adresse2): static
-    {
+    public function setAdresse2(?string $adresse2): static {
         $this->adresse2 = $adresse2;
 
         return $this;
     }
 
-    public function getCp(): ?string
-    {
+    public function getCp(): ?string {
         return $this->cp;
     }
 
-    public function setCp(string $cp): static
-    {
+    public function setCp(string $cp): static {
         $this->cp = $cp;
 
         return $this;
     }
 
-    public function getVille(): ?string
-    {
+    public function getVille(): ?string {
         return $this->ville;
     }
 
-    public function setVille(string $ville): static
-    {
+    public function setVille(string $ville): static {
         $this->ville = $ville;
 
         return $this;
     }
 
-    public function getTel(): ?string
-    {
+    public function getTel(): ?string {
         return $this->tel;
     }
 
-    public function setTel(string $tel): static
-    {
+    public function setTel(string $tel): static {
         $this->tel = $tel;
 
         return $this;
     }
 
-    public function getMail(): ?string
-    {
+    public function getMail(): ?string {
         return $this->mail;
     }
 
-    public function setMail(string $mail): static
-    {
+    public function setMail(string $mail): static {
         $this->mail = $mail;
 
         return $this;

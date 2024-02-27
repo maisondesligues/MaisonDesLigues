@@ -1,31 +1,31 @@
 use mdl;
 
 #Hotels
-Insert into hotel (pnom, adresse1, cp, ville, tel, mail)
-Values ("ibis Styles Lille Centre Gare Beffroi", "172 Rue Pierre Mauroy", 59000, "Lille", "0320300054", "H1384@accor.com");
+Insert into hotel (id, pnom, adresse1, cp, ville, tel, mail)
+Values (1, "ibis Styles Lille Centre Gare Beffroi", "172 Rue Pierre Mauroy", "59000", "Lille", "0320300054", "H1384@accor.com");
 
-Insert into hotel (pnom, adresse1, cp, ville, tel, mail)
-Values ("Ibis Budget Lille Gares Vieux-Lille", "10, Rue De Courtrai", 59000, "Lille", "0892683078", "H5208@accor.com");
+Insert into hotel (id, pnom, adresse1, cp, ville, tel, mail)
+Values (2, "Ibis Budget Lille Gares Vieux-Lille", "10, Rue De Courtrai", "59000", "Lille", "0892683078", "H5208@accor.com");
 
 #Catégories Chambres
-Insert into categorie_chambre (libelle_categorie)
-Values ("Single");
+Insert into categorie_chambre (id, libelle_categorie)
+Values (1, "Single");
 
-Insert into categorie_chambre (libelle_categorie)
-Values ("Double");
+Insert into categorie_chambre (id, libelle_categorie)
+Values (2, "Double");
 
 #Proposer
-Insert into proposer (tarif_nuite)
-Values (95);
+Insert into proposer (id, hotel_id, categorie_id ,tarif_nuite)
+Values (1, 1, 95);
 
-Insert into proposer (tarif_nuite)
-Values (105);
+Insert into proposer (hotel_id, categorie_id ,tarif_nuite)
+Values (2, 2, 105);
 
-Insert into proposer (tarif_nuite)
-Values (70);
+Insert into proposer (hotel_id, categorie_id ,tarif_nuite)
+Values (2, 1, 70);
 
-Insert into proposer (tarif_nuite)
-Values (80);
+Insert into proposer (hotel_id, categorie_id ,tarif_nuite)
+Values (2, 2, 80);
 
 #Thèmes
 -- Thèmes liés à l'atelier 1
@@ -120,4 +120,4 @@ INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (6, 31);
 select * from atelier;
 select * from hotel;
 select * from theme;
-
+select * from proposer;
