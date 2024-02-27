@@ -18,12 +18,16 @@ class BaseController extends AbstractController {
         $ateliers = $atelierRepository->findAll();
         $hotels = $hotelRepository->findAll();
         $categoriesChambres = $categorieChambreRepository->findAll();
-        $ibisSingle = $appParameters->getBudgetHotelSinglePrix();
-        $ibisDouble = $appParameters->getBudgetHotelDoublePrix();
+        $budgetSingle = $appParameters->getBudgetHotelSinglePrix();
+        $budgetDouble = $appParameters->getBudgetHotelDoublePrix();
+        $ibisSingle = $appParameters->getIbisHotelSinglePrix();
+        $ibisDouble = $appParameters->getIbisHotelDoublePrix();
         return $this->render('Accueil.html.twig', [
                     'ateliers' => $ateliers,
                     'hotels' => $hotels,
                     'categoriesChambres' => $categoriesChambres,
+                    'budgetSingle' => $budgetSingle,
+                    'budgetDouble' => $budgetDouble,
                     'ibisSingle' => $ibisSingle,
                     'ibisDouble' => $ibisDouble,
         ]);

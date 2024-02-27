@@ -5,7 +5,7 @@
             <h2 class="text-xl font-bold mb-4">Dates du Congrès</h2>
             <p>Le congrès se déroulera du 20 au 23 Octobre 2024.</p>
         </section>
-        
+
         <!-- Bloc pour les ateliers proposés -->
         <section class="p-6 bg-gray-100">
             <h2 class="text-xl font-bold mb-4">Ateliers Proposés</h2>
@@ -18,23 +18,30 @@
                             {% endfor %}
                     </ul>
                 {% endfor %}
+            </div>
+        </section>
+
+        <!-- Bloc pour les options d'hébergement -->
+        <section class="p-6">
+            <h2 class="text-xl font-bold mb-4">Options d'Hébergement</h2>
+            {% for hotel in hotels %}
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-2">{{ hotel.pnom }}</h3>
+                    <p>Adresse : {{ hotel.adresse1 }}, {{ hotel.cp }} {{ hotel.ville }}</p>
+                    
+                    <p class="font-bold">Tarifications :</p>
+                    {% if hotel.pnom == "ibis Styles Lille Centre Gare Beffroi" %}
+                        <li>Single: {{ ibisSingle }} €</li>
+                        <li>Double: {{ ibisDouble }} €</li>
+                    {% endif %}
+                    
+                    {% if hotel.pnom == "Ibis Budget Lille Gares Vieux-Lille" %}
+                        <li>Single: {{ budgetSingle }} €</li>
+                        <li>Double: {{ budgetDouble }} €</li>
+                    {% endif %}
+                    
                 </div>
-            </section>
-
-            <!-- Bloc pour les options d'hébergement -->
-            <section class="p-6">
-                <h2 class="text-xl font-bold mb-4">Options d'Hébergement</h2>
-                {% for hotel in hotels %}
-                    <div class="mb-6">
-                        <h3 class="text-lg font-semibold mb-2">{{ hotel.pnom }}</h3>
-                        <p>Adresse : {{ hotel.adresse1 }}, {{ hotel.cp }} {{ hotel.ville }}</p>
-                        {% for categorie in categoriesChambres %}
-                        {% endfor %}
-                    </div>
-                {% endfor %}
-            </section>
-        </body>
-
-
-
-        {% endblock %}
+            {% endfor %}
+        </section>
+    </body>
+{% endblock %}
