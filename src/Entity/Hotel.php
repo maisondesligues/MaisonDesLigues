@@ -22,8 +22,8 @@ class Hotel
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $adresse2 = null;
 
-    #[ORM\Column]
-    private ?int $cp = null;
+    #[ORM\Column(length: 50)]
+    private ?string $cp = null;
 
     #[ORM\Column(length: 255)]
     private ?string $ville = null;
@@ -33,6 +33,9 @@ class Hotel
 
     #[ORM\Column(length: 255)]
     private ?string $mail = null;
+
+    #[ORM\OneToMany(mappedBy: 'hotel', targetEntity: Proposer::class)]
+    private $tarifs;
 
     public function getId(): ?int
     {
@@ -75,12 +78,12 @@ class Hotel
         return $this;
     }
 
-    public function getCp(): ?int
+    public function getCp(): ?string
     {
         return $this->cp;
     }
 
-    public function setCp(int $cp): static
+    public function setCp(string $cp): static
     {
         $this->cp = $cp;
 

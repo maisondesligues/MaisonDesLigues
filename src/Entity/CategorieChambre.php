@@ -16,6 +16,9 @@ class CategorieChambre
     #[ORM\Column(length: 255)]
     private ?string $libelleCategorie = null;
 
+    #[ORM\OneToMany(mappedBy: 'categorieChambre', targetEntity: Proposer::class)]
+    private $tarifs;
+    
     public function getId(): ?int
     {
         return $this->id;

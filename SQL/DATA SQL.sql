@@ -117,15 +117,6 @@ INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (6, 29);
 INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (6, 30);
 INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (6, 31);
 
-
-SELECT a.id, a.libelle as AtelierLibelle, t.libelle as ThemeLibelle
-FROM atelier a
-JOIN theme t ON a.id = t.id;
-
-UPDATE atelier set nb_places_maxi = 3 ;
-SELECT * FROM atelier;
-ALTER table theme add constraint FK_ATELIER_THEME foreign key (idatelier) references atelier(id);
-
 select * from atelier;
 select * from hotel;
 select * from theme;
