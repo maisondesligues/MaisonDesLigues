@@ -29,47 +29,47 @@ Values (80);
 
 #Thèmes
 -- Thèmes liés à l'atelier 1
-INSERT INTO theme (idatelier,libelle) VALUES (1,'Diagnostic et identification des critères du club');
-INSERT INTO theme (idatelier,libelle) VALUES (1,'Analyse systémique de l’environnement et méthodologie de mise en œuvre du projet');
-INSERT INTO theme (idatelier,libelle) VALUES (1,'Actions solidaires et innovantes');
-INSERT INTO theme (idatelier,libelle) VALUES (1,'Financements');
-INSERT INTO theme (idatelier,libelle) VALUES (1,'Outils et documentation');
-INSERT INTO theme (idatelier,libelle) VALUES (1,'Valoriser et communiquer sur le projet');
+INSERT INTO theme (id, libelle) VALUES (1,'Diagnostic et identification des critères du club');
+INSERT INTO theme (id, libelle) VALUES (2,'Analyse systémique de l’environnement et méthodologie de mise en œuvre du projet');
+INSERT INTO theme (id, libelle) VALUES (3,'Actions solidaires et innovantes');
+INSERT INTO theme (id, libelle) VALUES (4,'Financements');
+INSERT INTO theme (id, libelle) VALUES (5,'Outils et documentation');
+INSERT INTO theme (id, libelle) VALUES (6,'Valoriser et communiquer sur le projet');
 
 -- Thèmes liés à l'atelier 2
-INSERT INTO theme (idatelier,libelle) VALUES (2,'Création – Obligations légales');
-INSERT INTO theme (idatelier,libelle) VALUES (2,'Gestion du personnel, de la structure et des conflits');
-INSERT INTO theme (idatelier,libelle) VALUES (2,'Relations internes, externes et avec le Comité départemental, la Ligue et la Fédération');
-INSERT INTO theme (idatelier,libelle) VALUES (2,'Conventions');
-INSERT INTO theme (idatelier,libelle) VALUES (2,'Partenariats');
+INSERT INTO theme (id, libelle) VALUES (7,'Création – Obligations légales');
+INSERT INTO theme (id, libelle) VALUES (8,'Gestion du personnel, de la structure et des conflits');
+INSERT INTO theme (id, libelle) VALUES (9,'Relations internes, externes et avec le Comité départemental, la Ligue et la Fédération');
+INSERT INTO theme (id, libelle) VALUES (10,'Conventions');
+INSERT INTO theme (id, libelle) VALUES (11,'Partenariats');
 
 -- Thèmes liés à l'atelier 3
-INSERT INTO theme (idatelier,libelle) VALUES (3,'Logiciel FFE de gestion des compétitions (présentation et formation)');
-INSERT INTO theme (idatelier,libelle) VALUES (3,'Présentation du document « L’arbitrage en images »');
-INSERT INTO theme (idatelier,libelle) VALUES (3,'Plaquette & guide projet du club');
-INSERT INTO theme (idatelier,libelle) VALUES (3,'Labelisation du club');
-INSERT INTO theme (idatelier,libelle) VALUES (3,'Aménagement des équipements');
-INSERT INTO theme (idatelier,libelle) VALUES (3,'Assurances');
+INSERT INTO theme (id, libelle) VALUES (12,'Logiciel FFE de gestion des compétitions (présentation et formation)');
+INSERT INTO theme (id, libelle) VALUES (13,'Présentation du document « L’arbitrage en images »');
+INSERT INTO theme (id, libelle) VALUES (14,'Plaquette & guide projet du club');
+INSERT INTO theme (id, libelle) VALUES (15,'Labelisation du club');
+INSERT INTO theme (id, libelle) VALUES (16,'Aménagement des équipements');
+INSERT INTO theme (id, libelle) VALUES (17,'Assurances');
 
 -- Thèmes liés à l'atelier 4
-INSERT INTO theme (idatelier,libelle) VALUES (4,'Observations et analyses sur l’encadrement actuel');
-INSERT INTO theme (idatelier,libelle) VALUES (4,'Propositions de nouveaux schémas d’organisation');
-INSERT INTO theme (idatelier,libelle) VALUES (4,'Profils types et pratiques innovantes');
-INSERT INTO theme (idatelier,libelle) VALUES (4,'Critères et seuils nécessaires à la pérennité de l’emploi');
-INSERT INTO theme (idatelier,libelle) VALUES (4,'Exercice du métier d’enseignant (avantages et inconvénients)');
+INSERT INTO theme (id, libelle) VALUES (18,'Observations et analyses sur l’encadrement actuel');
+INSERT INTO theme (id, libelle) VALUES (19,'Propositions de nouveaux schémas d’organisation');
+INSERT INTO theme (id, libelle) VALUES (20,'Profils types et pratiques innovantes');
+INSERT INTO theme (id, libelle) VALUES (21,'Critères et seuils nécessaires à la pérennité de l’emploi');
+INSERT INTO theme (id, libelle) VALUES (22,'Exercice du métier d’enseignant (avantages et inconvénients)');
 
 -- Thèmes liés à l'atelier 5
-INSERT INTO theme (idatelier,libelle) VALUES (5,'Présentation');
-INSERT INTO theme (idatelier,libelle) VALUES (5,'Fonctionnement');
-INSERT INTO theme (idatelier,libelle) VALUES (5,'Objectifs');
-INSERT INTO theme (idatelier,libelle) VALUES (5,'Nouveaux diplômes');
-INSERT INTO theme (idatelier,libelle) VALUES (5,'Financements');
+INSERT INTO theme (id, libelle) VALUES (23,'Présentation');
+INSERT INTO theme (id, libelle) VALUES (24,'Fonctionnement');
+INSERT INTO theme (id, libelle) VALUES (25,'Objectifs');
+INSERT INTO theme (id, libelle) VALUES (26,'Nouveaux diplômes');
+INSERT INTO theme (id, libelle) VALUES (27,'Financements');
 
 -- Thèmes liés à l'atelier 6
-INSERT INTO theme (idatelier,libelle) VALUES (6,'Les enjeux climatiques, énergétiques et économiques');
-INSERT INTO theme (idatelier,libelle) VALUES (6,'Sport et développement durable');
-INSERT INTO theme (idatelier,libelle) VALUES (6,'Démarche fédérale');
-INSERT INTO theme (idatelier,libelle) VALUES (6,'Échange');
+INSERT INTO theme (id,libelle) VALUES (28,'Les enjeux climatiques, énergétiques et économiques');
+INSERT INTO theme (id,libelle) VALUES (29,'Sport et développement durable');
+INSERT INTO theme (id, libelle) VALUES (30,'Démarche fédérale');
+INSERT INTO theme (id, libelle) VALUES (31,'Échange');
 select * from theme;
 
 # Ateliers
@@ -79,6 +79,48 @@ INSERT INTO atelier (id, libelle) VALUES (3, 'Les outils à disposition et remis
 INSERT INTO atelier (id, libelle) VALUES (4, 'Observatoire des métiers de l’escrime');
 INSERT INTO atelier (id, libelle) VALUES (5, 'I.F.F.E');
 INSERT INTO atelier (id, libelle) VALUES (6, 'Développement durable');
+
+#ManyToMany ATELIER-THEME
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (1, 1);
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (1, 2);
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (1, 4);
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (1, 5);
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (1, 6);
+
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (2, 7);
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (2, 8);
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (2, 9);
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (2, 10);
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (2, 11);
+
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (3, 12);
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (3, 13);
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (3, 14);
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (3, 15);
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (3, 16);
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (3, 17);
+
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (4, 18);
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (4, 19);
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (4, 20);
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (4, 21);
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (4, 22);
+
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (5, 23);
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (5, 24);
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (5, 25);
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (5, 26);
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (5, 27);
+
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (6, 28);
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (6, 29);
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (6, 30);
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (6, 31);
+
+
+SELECT a.id, a.libelle as AtelierLibelle, t.libelle as ThemeLibelle
+FROM atelier a
+JOIN theme t ON a.id = t.id;
 
 UPDATE atelier set nb_places_maxi = 3 ;
 SELECT * FROM atelier;

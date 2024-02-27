@@ -14,6 +14,11 @@ class Vacation
     #[ORM\Column]
     private ?int $id = null;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="Atelier", inversedBy="vacations")
+     */
+    private $atelier;
+    
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateHeureDebut = null;
 

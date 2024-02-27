@@ -12,12 +12,16 @@ class Theme
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
+    
     #[ORM\Column(length: 255)]
     private ?string $libelle = null;
-
-    #[ORM\Column]
-    private ?int $idatelier = null;
+    
+    #[ORM\ManyToMany(mappedBy: 'themes', targetEntity: Atelier::class)]
+    private $ateliers;
+    
+     public function __construct() {
+        $this->ateliers = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -32,18 +36,6 @@ class Theme
     public function setLibelle(string $libelle): static
     {
         $this->libelle = $libelle;
-
-        return $this;
-    }
-
-    public function getIdatelier(): ?int
-    {
-        return $this->idatelier;
-    }
-
-    public function setIdatelier(int $idatelier): static
-    {
-        $this->idatelier = $idatelier;
 
         return $this;
     }

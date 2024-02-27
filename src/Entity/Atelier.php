@@ -11,13 +11,20 @@ class Atelier
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private ?int $id;
 
     #[ORM\Column(length: 255)]
     private ?string $libelle = null;
 
     #[ORM\Column]
     private ?int $nbPlacesMaxi = null;
+    
+    #[ORM\ManyToMany(targetEntity: Theme::class, inversedBy: 'ateliers')]
+    private $themes;
+    
+    public function __construct() {
+        $this->themes = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     public function getId(): ?int
     {
