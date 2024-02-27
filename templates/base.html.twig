@@ -3,33 +3,33 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>MDL</title>
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('build/images/Mdl.ico') }}">
+        <title>Maison Des Ligues</title>
+
+        <!-- Favicon -->
+        <link rel="icon" type="image/x-icon" href="{{ asset('build/images/Mdl.ico') }}">
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
         {% endblock %}
     </head>
-<header class="bg-white shadow">
-  <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center w-full">
-    <!-- Logo à l'extrême gauche -->
-    <a href="{{ path('app_base') }}" class="flex-shrink-0">
-      <img src="{{ asset('build/images/Mdl.png') }}" alt="Logo" class="h-10">
 
-    </a>
+    <header class="bg-white shadow">
+        <div class="mx-auto py-4 px-4 flex justify-between items-center">
 
-    <!-- Textes à l'extrême droite -->
-    <div class="flex">
-      <div class="text-gray-800 mr-4">Inscription</div>
-      <div class="text-gray-800">Réservation</div>
-    </div>
-  </div>
-</header>
+            <!-- Logo à l'extrême gauche -->
+            <a href="{{ path('app_base') }}" class="flex-shrink-0">
+                <img src="{{ asset('build/images/Mdl.png') }}" alt="Logo">
+            </a>
 
-
+            <!-- Textes à l'extrême droite -->
+            <div class="flex text-xl font-bold text-gray-800">
+                <div class="mr-4">Inscription</div>
+                <div>Réservation</div>
+            </div>
+        </div>
+    </header>
 
     <body class="bg-stone-400">
-{% block content %}
-{% endblock %}
+        {% block content %}
+        {% endblock %}
     </body>
 </html>

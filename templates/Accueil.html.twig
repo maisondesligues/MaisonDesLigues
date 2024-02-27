@@ -1,40 +1,40 @@
 {% extends "base.html.twig" %}
 {% block content %}
-<body>
-    <section class="p-6 ">
-        <h2 class="text-xl font-bold mb-4">Dates du Congrès</h2>
-        <p>Le congrès se déroulera du 20 au 23 Octobre 2024.</p>
-    </section>
-    <!-- Bloc pour les ateliers proposés -->
-    <section class="p-6 bg-gray-100">
-        <h2 class="text-xl font-bold mb-4">Ateliers Proposés</h2>
-        <div class="space-y-4">
-            {% for atelier in ateliers %}
-                <div>
-                    <h3 class="font-semibold">{{ atelier.libelle }}</h3>
-                    {% for theme in atelier.themes %}
-                        <p>Thème : {{ theme.libelle }}</p>
-                    {% endfor %}
-                </div>
-            {% endfor %}
-        </div>
-    </section>
-
-    <!-- Bloc pour les options d'hébergement -->
-    <section class="p-6">
-        <h2 class="text-xl font-bold mb-4">Options d'Hébergement</h2>
-        {% for hotel in hotels %}
-            <div class="mb-6">
-                <h3 class="text-lg font-semibold mb-2">{{ hotel.pnom }}</h3>
-                <p>Adresse : {{ hotel.adresse1 }}, {{ hotel.cp }} {{ hotel.ville }}</p>
-                {% for categorie in categoriesChambres %}
-                    <p>Catégorie : {{ categorie.libelle_categorie }} - Tarif nuitée : X€</p>
+    <body>
+        <section class="p-6 ">
+            <h2 class="text-xl font-bold mb-4">Dates du Congrès</h2>
+            <p>Le congrès se déroulera du 20 au 23 Octobre 2024.</p>
+        </section>
+        
+        <!-- Bloc pour les ateliers proposés -->
+        <section class="p-6 bg-gray-100">
+            <h2 class="text-xl font-bold mb-4">Ateliers Proposés</h2>
+            <div class="space-y-4">
+                {% for atelier in ateliers %}
+                    <h2 class="text-xl font-semibold decoration-neutral-200">{{ atelier.libelle }}</h2>
+                    <ul>
+                        {% for theme in atelier.themes %}
+                            <li>{{ theme.libelle }}</li>
+                            {% endfor %}
+                    </ul>
                 {% endfor %}
-            </div>
-        {% endfor %}
-    </section>
-</body>
+                </div>
+            </section>
+
+            <!-- Bloc pour les options d'hébergement -->
+            <section class="p-6">
+                <h2 class="text-xl font-bold mb-4">Options d'Hébergement</h2>
+                {% for hotel in hotels %}
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold mb-2">{{ hotel.pnom }}</h3>
+                        <p>Adresse : {{ hotel.adresse1 }}, {{ hotel.cp }} {{ hotel.ville }}</p>
+                        {% for categorie in categoriesChambres %}
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </section>
+        </body>
 
 
 
-{% endblock %}
+        {% endblock %}

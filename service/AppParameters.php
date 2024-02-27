@@ -1,6 +1,9 @@
 <?php
 namespace App\service;
 
+/*
+ * Obtiens les paramètres de l'application
+ */
 class AppParameters
 {
     private $params;
