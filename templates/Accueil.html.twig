@@ -3,7 +3,7 @@
     <body>
         <section class="p-6 ">
             <h2 class="text-xl font-bold mb-4">Dates du Congrès</h2>
-            <p>Le congrès se déroulera du 20 au 23 Octobre 2024.</p>
+            <h2 class="text-sm">Le congrès se déroulera du 20 au 23 Octobre 2024.</h2>
         </section>
 
         <!-- Bloc pour les ateliers proposés -->
@@ -11,10 +11,10 @@
             <h2 class="text-xl font-bold mb-4">Ateliers Proposés</h2>
             <div class="space-y-4">
                 {% for atelier in ateliers %}
-                    <h2 class="text-xl font-semibold decoration-neutral-200">{{ atelier.libelle }}</h2>
+                    <h2 class="text-base font-semibold decoration-neutral-200">{{ atelier.libelle }}</h2>
                     <ul>
                         {% for theme in atelier.themes %}
-                            <li>{{ theme.libelle }}</li>
+                            <li class="text-sm">{{ theme.libelle }}</li>
                             {% endfor %}
                     </ul>
                 {% endfor %}
@@ -26,7 +26,7 @@
             <h2 class="text-xl font-bold mb-4">Options d'Hébergement</h2>
             {% for hotel in hotels %}
                 <div class="mb-6">
-                    <h3 class="text-lg font-semibold mb-2">{{ hotel.pnom }}</h3>
+                    <h3 class="text-base font-semibold mb-2">{{ hotel.pnom }}</h3>
                     <p>Adresse : {{ hotel.adresse1 }}, {{ hotel.cp }} {{ hotel.ville }}</p>
                     
                     <p class="font-bold">Tarifications :</p>
@@ -36,8 +36,8 @@
                     {% endif %}
                     
                     {% if hotel.pnom == "Ibis Budget Lille Gares Vieux-Lille" %}
-                        <li>Single: {{ budgetSingle }} €</li>
-                        <li>Double: {{ budgetDouble }} €</li>
+                        <li class="text-sm">Single: {{ budgetSingle }} €</li>
+                        <li class="text-sm">Double: {{ budgetDouble }} €</li>
                     {% endif %}
                     
                 </div>
