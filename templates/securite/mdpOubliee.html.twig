@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mot de passe oublié - Maison des ligues{% endblock %}
+
+{% block body %}
+    {% for message in app.flashes('message') %}
+        <div class="alert alert-success" role="alert">
+            {{ message }}
+    {% endfor %}
+    {% for message in app.flashes('warning') %}
+        <div class="alert alert-warning" role="alert">
+            {{ message }}
+    {% endfor %}
+    {% for message in app.flashes('danger') %}
+        <div class="alert alert-danger" role="alert">
+            {{ message }}
+    {% endfor %}
+    <section class=container my-3">
+        <div class=row">
+            <div class="col">
+                <form method="post">
+                    <h1 class="h3 mb-3 font-weight-normal">Mot de passe oublié</h1>     
+                    {{ form(emailForm) }}
+                </form>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}

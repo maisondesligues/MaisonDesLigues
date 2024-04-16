@@ -10,24 +10,10 @@
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
         {% endblock %}
-    </head>
+   
+        {% include 'elements/navbar.html.twig' %}
 
-    <header class="bg-white shadow">
-        <div class="mx-auto py-4 px-4 flex justify-between items-center">
-
-            <!-- Logo à l'extrême gauche -->
-            <a href="{{ path('app_base') }}" class="flex-shrink-0 w-20">
-                <img src="{{ asset('build/images/Mdl.png') }}" alt="Logo">
-            </a>
-
-            <!-- Textes à l'extrême droite -->
-            <div class="flex text-base font-bold text-gray-800">
-                <div class="mr-4">Inscription</div>
-                <div>Réservation</div>
-            </div>
-        </div>
-    </header>
-    <body class=" bg-stone-400 w-[100%] ">
+    <body class=" bg-white w-[100%] ">
         <div class="w-[100%] flex justify-center">
             {% block content %}
             {% endblock %}
