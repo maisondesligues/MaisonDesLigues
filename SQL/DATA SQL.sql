@@ -15,7 +15,7 @@ Insert into categorie_chambre (id, libelle_categorie)
 Values (2, "Double");
 
 #Proposer
-Insert into proposer (id, hotel_id, categorie_id ,tarif_nuite)
+Insert into proposer (hotel_id, categorie_id ,tarif_nuite)
 Values (1, 1, 95);
 
 Insert into proposer (hotel_id, categorie_id ,tarif_nuite)
@@ -29,56 +29,55 @@ Values (2, 2, 80);
 
 #Thèmes
 -- Thèmes liés à l'atelier 1
-INSERT INTO theme (id, libelle) VALUES (1,'Diagnostic et identification des critères du club');
-INSERT INTO theme (id, libelle) VALUES (2,'Analyse systémique de l’environnement et méthodologie de mise en œuvre du projet');
-INSERT INTO theme (id, libelle) VALUES (3,'Actions solidaires et innovantes');
-INSERT INTO theme (id, libelle) VALUES (4,'Financements');
-INSERT INTO theme (id, libelle) VALUES (5,'Outils et documentation');
-INSERT INTO theme (id, libelle) VALUES (6,'Valoriser et communiquer sur le projet');
+INSERT INTO theme (libelle) VALUES ('Diagnostic et identification des critères du club');
+INSERT INTO theme (libelle) VALUES ('Analyse systémique de l’environnement et méthodologie de mise en œuvre du projet');
+INSERT INTO theme (libelle) VALUES ('Actions solidaires et innovantes');
+INSERT INTO theme (libelle) VALUES ('Financements');
+INSERT INTO theme (libelle) VALUES ('Outils et documentation');
+INSERT INTO theme (libelle) VALUES ('Valoriser et communiquer sur le projet');
 
 -- Thèmes liés à l'atelier 2
-INSERT INTO theme (id, libelle) VALUES (7,'Création – Obligations légales');
-INSERT INTO theme (id, libelle) VALUES (8,'Gestion du personnel, de la structure et des conflits');
-INSERT INTO theme (id, libelle) VALUES (9,'Relations internes, externes et avec le Comité départemental, la Ligue et la Fédération');
-INSERT INTO theme (id, libelle) VALUES (10,'Conventions');
-INSERT INTO theme (id, libelle) VALUES (11,'Partenariats');
+INSERT INTO theme (libelle) VALUES ('Création – Obligations légales');
+INSERT INTO theme (libelle) VALUES ('Gestion du personnel, de la structure et des conflits');
+INSERT INTO theme (libelle) VALUES ('Relations internes, externes et avec le Comité départemental, la Ligue et la Fédération');
+INSERT INTO theme (libelle) VALUES ('Conventions');
+INSERT INTO theme (libelle) VALUES ('Partenariats');
 
 -- Thèmes liés à l'atelier 3
-INSERT INTO theme (id, libelle) VALUES (12,'Logiciel FFE de gestion des compétitions (présentation et formation)');
-INSERT INTO theme (id, libelle) VALUES (13,'Présentation du document « L’arbitrage en images »');
-INSERT INTO theme (id, libelle) VALUES (14,'Plaquette & guide projet du club');
-INSERT INTO theme (id, libelle) VALUES (15,'Labelisation du club');
-INSERT INTO theme (id, libelle) VALUES (16,'Aménagement des équipements');
-INSERT INTO theme (id, libelle) VALUES (17,'Assurances');
+INSERT INTO theme (libelle) VALUES ('Logiciel FFE de gestion des compétitions (présentation et formation)');
+INSERT INTO theme (libelle) VALUES ('Présentation du document « L’arbitrage en images »');
+INSERT INTO theme (libelle) VALUES ('Plaquette & guide projet du club');
+INSERT INTO theme (libelle) VALUES ('Labelisation du club');
+INSERT INTO theme (libelle) VALUES ('Aménagement des équipements');
+INSERT INTO theme (libelle) VALUES ('Assurances');
 
 -- Thèmes liés à l'atelier 4
-INSERT INTO theme (id, libelle) VALUES (18,'Observations et analyses sur l’encadrement actuel');
-INSERT INTO theme (id, libelle) VALUES (19,'Propositions de nouveaux schémas d’organisation');
-INSERT INTO theme (id, libelle) VALUES (20,'Profils types et pratiques innovantes');
-INSERT INTO theme (id, libelle) VALUES (21,'Critères et seuils nécessaires à la pérennité de l’emploi');
-INSERT INTO theme (id, libelle) VALUES (22,'Exercice du métier d’enseignant (avantages et inconvénients)');
+INSERT INTO theme (libelle) VALUES ('Observations et analyses sur l’encadrement actuel');
+INSERT INTO theme (libelle) VALUES ('Propositions de nouveaux schémas d’organisation');
+INSERT INTO theme (libelle) VALUES ('Profils types et pratiques innovantes');
+INSERT INTO theme (libelle) VALUES ('Critères et seuils nécessaires à la pérennité de l’emploi');
+INSERT INTO theme (libelle) VALUES ('Exercice du métier d’enseignant (avantages et inconvénients)');
 
 -- Thèmes liés à l'atelier 5
-INSERT INTO theme (id, libelle) VALUES (23,'Présentation');
-INSERT INTO theme (id, libelle) VALUES (24,'Fonctionnement');
-INSERT INTO theme (id, libelle) VALUES (25,'Objectifs');
-INSERT INTO theme (id, libelle) VALUES (26,'Nouveaux diplômes');
-INSERT INTO theme (id, libelle) VALUES (27,'Financements');
+INSERT INTO theme (libelle) VALUES ('Présentation');
+INSERT INTO theme (libelle) VALUES ('Fonctionnement');
+INSERT INTO theme (libelle) VALUES ('Objectifs');
+INSERT INTO theme (libelle) VALUES ('Nouveaux diplômes');
 
 -- Thèmes liés à l'atelier 6
-INSERT INTO theme (id,libelle) VALUES (28,'Les enjeux climatiques, énergétiques et économiques');
-INSERT INTO theme (id,libelle) VALUES (29,'Sport et développement durable');
-INSERT INTO theme (id, libelle) VALUES (30,'Démarche fédérale');
-INSERT INTO theme (id, libelle) VALUES (31,'Échange');
+INSERT INTO theme (libelle) VALUES ('Les enjeux climatiques, énergétiques et économiques');
+INSERT INTO theme (libelle) VALUES ('Sport et développement durable');
+INSERT INTO theme (libelle) VALUES ('Démarche fédérale');
+INSERT INTO theme (libelle) VALUES ('Échange');
 select * from theme;
 
 # Ateliers
-INSERT INTO atelier (id, libelle) VALUES (1, 'Le club et son projet');
-INSERT INTO atelier (id, libelle) VALUES (2, 'Le fonctionnement du club');
-INSERT INTO atelier (id, libelle) VALUES (3, 'Les outils à disposition et remis aux clubs');
-INSERT INTO atelier (id, libelle) VALUES (4, 'Observatoire des métiers de l’escrime');
-INSERT INTO atelier (id, libelle) VALUES (5, 'I.F.F.E');
-INSERT INTO atelier (id, libelle) VALUES (6, 'Développement durable');
+INSERT INTO atelier (libelle) VALUES ('Le club et son projet');
+INSERT INTO atelier (libelle) VALUES ('Le fonctionnement du club');
+INSERT INTO atelier (libelle) VALUES ('Les outils à disposition et remis aux clubs');
+INSERT INTO atelier (libelle) VALUES ('Observatoire des métiers de l’escrime');
+INSERT INTO atelier (libelle) VALUES ('I.F.F.E');
+INSERT INTO atelier (libelle) VALUES ('Développement durable');
 
 #ManyToMany ATELIER-THEME
 INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (1, 1);
@@ -110,14 +109,48 @@ INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (5, 23);
 INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (5, 24);
 INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (5, 25);
 INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (5, 26);
-INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (5, 27);
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (5, 4);
 
+INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (6, 27);
 INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (6, 28);
 INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (6, 29);
 INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (6, 30);
-INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (6, 31);
 
 select * from atelier;
 select * from hotel;
 select * from theme;
 select * from proposer;
+
+insert into vacation (id,date_heure_debut, date_heure_fin) values(1,'2024-09-08 11:00:00', '2024-09-08 12:30:00');
+insert into vacation (id,date_heure_debut, date_heure_fin) values(2,'2024-09-08 14:00:00', '2024-09-08 15:30:00');
+insert into vacation (id,date_heure_debut, date_heure_fin) values(3,'2024-09-08 16:00:00', '2024-09-08 17:30:00');
+insert into vacation (id,date_heure_debut, date_heure_fin) values(4,'2024-09-09 09:00:00', '2024-09-09 10:30:00');
+insert into vacation (id,date_heure_debut, date_heure_fin) values(5,'2024-09-09 11:00:00', '2024-09-09 12:30:00');
+insert into vacation (id,date_heure_debut, date_heure_fin) values(6,'2024-09-08 11:00:00', '2024-09-08 12:30:00');
+insert into vacation (id,date_heure_debut, date_heure_fin) values(7,'2024-09-08 14:00:00', '2024-09-08 15:30:00');
+insert into vacation (id,date_heure_debut, date_heure_fin) values(8,'2024-09-08 16:00:00', '2024-09-08 17:30:00');
+insert into vacation (id,date_heure_debut, date_heure_fin) values(9,'2024-09-09 09:00:00', '2024-09-09 10:30:00');
+insert into vacation (id,date_heure_debut, date_heure_fin) values(10,'2024-09-09 11:00:00', '2024-09-09 12:30:00');
+insert into vacation (id,date_heure_debut, date_heure_fin) values(11,'2024-09-08 11:00:00', '2024-09-08 12:30:00');
+insert into vacation (id,date_heure_debut, date_heure_fin) values(12,'2024-09-08 14:00:00', '2024-09-08 15:30:00');
+insert into vacation (id,date_heure_debut, date_heure_fin) values(13,'2024-09-08 16:00:00', '2024-09-08 17:30:00');
+insert into vacation (id,date_heure_debut, date_heure_fin) values(14,'2024-09-09 09:00:00', '2024-09-09 10:30:00');
+insert into vacation (id,date_heure_debut, date_heure_fin) values(15,'2024-09-09 11:00:00', '2024-09-09 12:30:00');
+
+insert into atelier_vacation (atelier_id, vacation_id) values(1, 1);
+insert into atelier_vacation (atelier_id, vacation_id) values(1, 2);
+insert into atelier_vacation (atelier_id, vacation_id) values(1, 3);
+insert into atelier_vacation (atelier_id, vacation_id) values(1, 4);
+insert into atelier_vacation (atelier_id, vacation_id) values(1, 5);
+
+insert into atelier_vacation (atelier_id, vacation_id) values(2, 6);
+insert into atelier_vacation (atelier_id, vacation_id) values(2, 7);
+insert into atelier_vacation (atelier_id, vacation_id) values(2, 8);
+insert into atelier_vacation (atelier_id, vacation_id) values(2, 9);
+insert into atelier_vacation (atelier_id, vacation_id) values(2, 10);
+
+insert into atelier_vacation (atelier_id, vacation_id) values(3, 11);
+insert into atelier_vacation (atelier_id, vacation_id) values(3, 12);
+insert into atelier_vacation (atelier_id, vacation_id) values(3, 13);
+insert into atelier_vacation (atelier_id, vacation_id) values(3, 14);
+insert into atelier_vacation (atelier_id, vacation_id) values(3, 15);
