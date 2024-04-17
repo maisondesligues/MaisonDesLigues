@@ -22,8 +22,12 @@ class Atelier {
     #[ORM\ManyToMany(targetEntity: Theme::class, inversedBy: 'ateliers')]
     private $themes;
 
+    #[ORM\ManyToMany(targetEntity: Vacation::class, inversedBy: 'ateliers')]
+    private $vacations;
+
     public function __construct() {
         $this->themes = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->vacations = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     public function getId(): ?int {
