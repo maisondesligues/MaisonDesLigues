@@ -37,6 +37,9 @@ class Hotel {
     #[ORM\OneToMany(mappedBy: 'hotel', targetEntity: Proposer::class)]
     public $propositions;
 
+    #[ORM\OneToMany(mappedBy: 'hotel', targetEntity: Nuite::class)]
+    public $nuites;
+
     public function getId(): ?int {
         return $this->id;
     }

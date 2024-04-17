@@ -18,6 +18,9 @@ class CategorieChambre
 
     #[ORM\OneToMany(mappedBy: 'categorieChambre', targetEntity: Proposer::class)]
     private $propositions;
+
+    #[ORM\OneToMany(mappedBy: 'categorieChambre', targetEntity: Nuite::class)]
+    private $nuites;
     
     public function getId(): ?int
     {

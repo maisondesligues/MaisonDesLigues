@@ -17,6 +17,15 @@ class Nuite
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $datenuitee = null;
 
+    #[ORM\ManyToOne(inversedBy: 'nuites')]
+    private ?CategorieChambre $categorie = null;
+
+    #[ORM\ManyToOne(inversedBy: 'nuites')]
+    private ?Hotel $hotel = null;
+
+    #[ORM\ManyToOne(inversedBy: 'nuites')]
+    private ?Inscription $inscription = null;
+
     public function getId(): ?int
     {
         return $this->id;
