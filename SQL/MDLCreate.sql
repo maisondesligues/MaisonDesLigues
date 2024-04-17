@@ -1,5 +1,3 @@
-Create DATABASE MDL;
-
-create user 'dbamdl'@'localhost' identified by 'maisondesligues21!';
-
-drop DATABASE mdl;
+CREATE DATABASE IF NOT EXISTS mdl;
+CREATE USER 'dbamdl'@'%' IDENTIFIED BY 'maisondesligues21!';
+GRANT ALL PRIVILEGES ON mdl.* TO 'dbamdl'@'%' WITH GRANT OPTION;
