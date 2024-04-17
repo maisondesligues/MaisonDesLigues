@@ -28,6 +28,9 @@ class Inscription
     #[ORM\OneToMany(targetEntity: Nuite::class, mappedBy: 'inscription')]
     private ?Collection $nuites;
 
+    #[ORM\ManyToOne(inversedBy: 'inscription')]
+    private ?Compte $compte = null;
+
     public function getId(): ?int
     {
         return $this->id;
