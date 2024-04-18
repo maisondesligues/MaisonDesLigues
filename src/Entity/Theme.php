@@ -31,7 +31,7 @@ class Theme
     /**
      * Créer une instance Theme
      */
-     public function __construct() {
+    public function __construct() {
         $this->ateliers = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
