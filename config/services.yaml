@@ -12,7 +12,17 @@ parameters:
     budget_hotel_double_prix: 80
     repas_accompagnant_prix: 38
     inscription_congres_prix: 130
-    
+
+    accueil_participant: "Accueil Des Participants"
+    pleniere: "Plénière"
+    intervention_agefos: "Intervention Uniformisation-Agefos"
+    ateliers: "Ateliers"
+    dejeuner_place: "Déjeuner Sur Place"
+    pause: "Pause"
+    reception_mairie_de_lille: "Réception Mairie De Lille"
+    diner: "Dîner"
+    pleniere_conclu: "Plénière-Conclusion"
+
 services:
     App\Service\AppParameters:
         arguments:
