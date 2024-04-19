@@ -36,6 +36,7 @@ class BaseController extends AbstractController {
     #[Route('/ateliers', name: 'ateliers_list')]
     public function listAteliers(AtelierRepository $atelierRepository): Response {
         $ateliers = $atelierRepository->findAll();
+        dump($ateliers);
 
         return $this->render('list.html.twig', [
                     'ateliers' => $ateliers,
