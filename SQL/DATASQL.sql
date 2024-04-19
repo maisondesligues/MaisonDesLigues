@@ -72,12 +72,12 @@ INSERT INTO theme (libelle) VALUES ('Échange');
 select * from theme;
 
 # Ateliers
-INSERT INTO atelier (libelle) VALUES ('Le club et son projet');
-INSERT INTO atelier (libelle) VALUES ('Le fonctionnement du club');
-INSERT INTO atelier (libelle) VALUES ('Les outils à disposition et remis aux clubs');
-INSERT INTO atelier (libelle) VALUES ('Observatoire des métiers de l’escrime');
-INSERT INTO atelier (libelle) VALUES ('I.F.F.E');
-INSERT INTO atelier (libelle) VALUES ('Développement durable');
+INSERT INTO atelier (libelle, nb_places_maxi) VALUES ('Le club et son projet', 15);
+INSERT INTO atelier (libelle, nb_places_maxi) VALUES ('Le fonctionnement du club', 15);
+INSERT INTO atelier (libelle, nb_places_maxi) VALUES ('Les outils à disposition et remis aux clubs', 15);
+INSERT INTO atelier (libelle, nb_places_maxi) VALUES ('Observatoire des métiers de l’escrime', 15);
+INSERT INTO atelier (libelle, nb_places_maxi) VALUES ('I.F.F.E', 15);
+INSERT INTO atelier (libelle, nb_places_maxi) VALUES ('Développement durable', 15);
 
 #ManyToMany ATELIER-THEME
 INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (1, 1);
@@ -116,41 +116,45 @@ INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (6, 28);
 INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (6, 29);
 INSERT INTO atelier_theme (atelier_id, theme_id) VALUES (6, 30);
 
+select * from atelier_theme;
+
 select * from atelier;
 select * from hotel;
 select * from theme;
 select * from proposer;
 
-insert into vacation (id,date_heure_debut, date_heure_fin) values(1,'2024-09-08 11:00:00', '2024-09-08 12:30:00');
-insert into vacation (id,date_heure_debut, date_heure_fin) values(2,'2024-09-08 14:00:00', '2024-09-08 15:30:00');
-insert into vacation (id,date_heure_debut, date_heure_fin) values(3,'2024-09-08 16:00:00', '2024-09-08 17:30:00');
-insert into vacation (id,date_heure_debut, date_heure_fin) values(4,'2024-09-09 09:00:00', '2024-09-09 10:30:00');
-insert into vacation (id,date_heure_debut, date_heure_fin) values(5,'2024-09-09 11:00:00', '2024-09-09 12:30:00');
-insert into vacation (id,date_heure_debut, date_heure_fin) values(6,'2024-09-08 11:00:00', '2024-09-08 12:30:00');
-insert into vacation (id,date_heure_debut, date_heure_fin) values(7,'2024-09-08 14:00:00', '2024-09-08 15:30:00');
-insert into vacation (id,date_heure_debut, date_heure_fin) values(8,'2024-09-08 16:00:00', '2024-09-08 17:30:00');
-insert into vacation (id,date_heure_debut, date_heure_fin) values(9,'2024-09-09 09:00:00', '2024-09-09 10:30:00');
-insert into vacation (id,date_heure_debut, date_heure_fin) values(10,'2024-09-09 11:00:00', '2024-09-09 12:30:00');
-insert into vacation (id,date_heure_debut, date_heure_fin) values(11,'2024-09-08 11:00:00', '2024-09-08 12:30:00');
-insert into vacation (id,date_heure_debut, date_heure_fin) values(12,'2024-09-08 14:00:00', '2024-09-08 15:30:00');
-insert into vacation (id,date_heure_debut, date_heure_fin) values(13,'2024-09-08 16:00:00', '2024-09-08 17:30:00');
-insert into vacation (id,date_heure_debut, date_heure_fin) values(14,'2024-09-09 09:00:00', '2024-09-09 10:30:00');
-insert into vacation (id,date_heure_debut, date_heure_fin) values(15,'2024-09-09 11:00:00', '2024-09-09 12:30:00');
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(1,'2024-09-08 11:00:00', '2024-09-08 12:30:00');
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(1,'2024-09-08 14:00:00', '2024-09-08 15:30:00');
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(1,'2024-09-08 16:00:00', '2024-09-08 17:30:00');
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(1,'2024-09-09 09:00:00', '2024-09-09 10:30:00');
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(1,'2024-09-09 11:00:00', '2024-09-09 12:30:00');
 
-insert into atelier_vacation (atelier_id, vacation_id) values(1, 1);
-insert into atelier_vacation (atelier_id, vacation_id) values(1, 2);
-insert into atelier_vacation (atelier_id, vacation_id) values(1, 3);
-insert into atelier_vacation (atelier_id, vacation_id) values(1, 4);
-insert into atelier_vacation (atelier_id, vacation_id) values(1, 5);
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(2,'2024-09-08 11:00:00', '2024-09-08 12:30:00');
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(2,'2024-09-08 14:00:00', '2024-09-08 15:30:00');
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(2,'2024-09-08 16:00:00', '2024-09-08 17:30:00');
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(2,'2024-09-09 09:00:00', '2024-09-09 10:30:00');
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(2,'2024-09-09 11:00:00', '2024-09-09 12:30:00');
 
-insert into atelier_vacation (atelier_id, vacation_id) values(2, 6);
-insert into atelier_vacation (atelier_id, vacation_id) values(2, 7);
-insert into atelier_vacation (atelier_id, vacation_id) values(2, 8);
-insert into atelier_vacation (atelier_id, vacation_id) values(2, 9);
-insert into atelier_vacation (atelier_id, vacation_id) values(2, 10);
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(3,'2024-09-08 11:00:00', '2024-09-08 12:30:00');
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(3,'2024-09-08 14:00:00', '2024-09-08 15:30:00');
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(3,'2024-09-08 16:00:00', '2024-09-08 17:30:00');
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(3,'2024-09-09 09:00:00', '2024-09-09 10:30:00');
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(3,'2024-09-09 11:00:00', '2024-09-09 12:30:00');
 
-insert into atelier_vacation (atelier_id, vacation_id) values(3, 11);
-insert into atelier_vacation (atelier_id, vacation_id) values(3, 12);
-insert into atelier_vacation (atelier_id, vacation_id) values(3, 13);
-insert into atelier_vacation (atelier_id, vacation_id) values(3, 14);
-insert into atelier_vacation (atelier_id, vacation_id) values(3, 15);
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(4,'2024-09-08 11:00:00', '2024-09-08 12:30:00');
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(4,'2024-09-08 14:00:00', '2024-09-08 15:30:00');
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(4,'2024-09-08 16:00:00', '2024-09-08 17:30:00');
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(4,'2024-09-09 09:00:00', '2024-09-09 10:30:00');
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(4,'2024-09-09 11:00:00', '2024-09-09 12:30:00');
+
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(5,'2024-09-08 11:00:00', '2024-09-08 12:30:00');
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(5,'2024-09-08 14:00:00', '2024-09-08 15:30:00');
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(5,'2024-09-08 16:00:00', '2024-09-08 17:30:00');
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(5,'2024-09-09 09:00:00', '2024-09-09 10:30:00');
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(5,'2024-09-09 11:00:00', '2024-09-09 12:30:00');
+
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(6,'2024-09-08 11:00:00', '2024-09-08 12:30:00');
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(6,'2024-09-08 14:00:00', '2024-09-08 15:30:00');
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(6,'2024-09-08 16:00:00', '2024-09-08 17:30:00');
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(6,'2024-09-09 09:00:00', '2024-09-09 10:30:00');
+insert into vacation (ateliers_id,date_heure_debut, date_heure_fin) values(6,'2024-09-09 11:00:00', '2024-09-09 12:30:00');

@@ -45,4 +45,49 @@ class AppParameters
     {
         return $this->params->get('inscription_congres_prix');
     }
+
+    public function getAccueilParticipants()
+    {
+        return $this->params->get('accueil_participants');
+    }
+
+    public function getPleniere()
+    {
+        return $this->params->get('pleniere');
+    }
+    
+    public function getInterventionAgefos()
+    {
+        return $this->params->get('intervention_agefos');
+    }
+    
+    public function getAteliers()
+    {
+        return $this->params->get('ateliers');
+    }
+    
+    public function getDejeunerSurPlace()
+    {
+        return $this->params->get('dejeuner_place');
+    }
+    
+    public function getPause()
+    {
+        return $this->params->get('pause');
+    }
+    
+    public function getReceptionMairieDeLille()
+    {
+        return $this->params->get('reception_mairie_de_lille');
+    }
+    
+    public function getDiner()
+    {
+        return $this->params->get('diner');
+    }
+    
+    public function getPleniereConclusion()
+    {
+        return $this->params->get('pleniere_conclu');
+    }
 }
