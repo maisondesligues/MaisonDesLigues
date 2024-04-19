@@ -1,5 +1,4 @@
-Create DATABASE MDL;
+CREATE DATABASE mdl;
 
-create user 'dbamdl'@'localhost' identified by 'maisondesligues21!';
-
-drop DATABASE mdl;
+CREATE USER 'dbamdl'@'127.0.0.1' IDENTIFIED BY 'maisondesligues21!';
+GRANT ALL PRIVILEGES ON mdl.* TO 'dbamdl'@'127.0.0.1' WITH GRANT OPTION;
