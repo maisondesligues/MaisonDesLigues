@@ -26,14 +26,14 @@ class Vacation
     /**
      * Date heure début Vacation
      */
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $dateHeureDebut = null;
+    #[ORM\Column(length: 255)]
+    private ?string $dateHeureDebut = null;
 
     /**
      * Date heure fin Vacation
      */
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $dateHeureFin = null;
+    #[ORM\Column(length: 255)]
+    private ?string $dateHeureFin = null;
 
     /**
      * Créer une instance Vacation
@@ -46,7 +46,7 @@ class Vacation
     /**
      * Retourne la date en heure de début de Vacation
      */
-    public function getDateHeureDebut(): ?\DateTimeInterface
+    public function getDateHeureDebut(): ?string
     {
         return $this->dateHeureDebut;
     }
@@ -54,7 +54,7 @@ class Vacation
     /**
      * Définit la date en heure de début de Vacation
      */
-    public function setDateHeureDebut(\DateTimeInterface $dateHeureDebut): static
+    public function setDateHeureDebut(string $dateHeureDebut): static
     {
         $this->dateHeureDebut = $dateHeureDebut;
 
@@ -64,7 +64,7 @@ class Vacation
     /**
      * Retourne la date en heure de fin de Vacation
      */
-    public function getDateHeureFin(): ?\DateTimeInterface
+    public function getDateHeureFin(): ?string
     {
         return $this->dateHeureFin;
     }
@@ -72,7 +72,7 @@ class Vacation
     /**
      * Définit la date en heure de fin de Vacation
      */
-    public function setDateHeureFin(\DateTimeInterface $dateHeureFin): static
+    public function setDateHeureFin(string $dateHeureFin): static
     {
         $this->dateHeureFin = $dateHeureFin;
 

@@ -8,13 +8,14 @@ use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\AtelierRepository;
 use App\Repository\HotelRepository;
+use App\Repository\VacationRepository;
 use App\Repository\CategorieChambreRepository;
 use App\Service\AppParameters;
 
 class BaseController extends AbstractController {
 
     #[Route('/accueil', name: 'app_base')]
-    public function index(AtelierRepository $atelierRepository, HotelRepository $hotelRepository, CategorieChambreRepository $categorieChambreRepository, AppParameters $appParameters): Response {
+    public function index(AtelierRepository $atelierRepository, HotelRepository $hotelRepository, CategorieChambreRepository $categorieChambreRepository, AppParameters $appParameters, VacationRepository $vacationRepository): Response {
         $ateliers = $atelierRepository->findAll();
         $hotels = $hotelRepository->findAll();
         $categoriesChambres = $categorieChambreRepository->findAll();
@@ -22,6 +23,8 @@ class BaseController extends AbstractController {
         $budgetDouble = $appParameters->getBudgetHotelDoublePrix();
         $ibisSingle = $appParameters->getIbisHotelSinglePrix();
         $ibisDouble = $appParameters->getIbisHotelDoublePrix();
+        $vacations = $vacationRepository->findAll();
+
         return $this->render('Accueil.html.twig', [
                     'ateliers' => $ateliers,
                     'hotels' => $hotels,
@@ -30,6 +33,7 @@ class BaseController extends AbstractController {
                     'budgetDouble' => $budgetDouble,
                     'ibisSingle' => $ibisSingle,
                     'ibisDouble' => $ibisDouble,
+                    'vacations' => $vacations
         ]);
     }
 
