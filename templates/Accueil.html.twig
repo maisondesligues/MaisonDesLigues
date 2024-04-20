@@ -38,9 +38,15 @@
                     class="atelier bg-stone-400 hover:bg-gray-300 transition duration-500 ease-in-out transform hover:-translate-y-1 hover:scale-110 p-4 mb-4 cursor-pointer mx-5 w-1/3"
                     aria-label="Détails des horraires">
 
-                    <div>
-                        {% for vacation in vacations|slice(0,5) %}
-                            <h1 class="text-base font-semibold decoration-neutral-200"> {{vacation.dateHeureDebut}} - {{vacation.dateHeureFin}} </h1>
+                    <div class="text-center">
+                        <h3 class="text-base font-semibold decoration-neutral-200"> 8 septembre </h3>
+                        {% for vacation in vacations|slice(0,3) %}
+                            <h1> {{vacation.dateHeureDebut|slice(11,5)}} - {{vacation.dateHeureFin|slice(11,5)}} </h1>
+                        {% endfor %}
+
+                        <h3 class="text-base font-semibold decoration-neutral-200"> 9 septembre </h3>
+                        {% for vacation in vacations|slice(3,2) %}
+                            <h1> {{vacation.dateHeureDebut|slice(11,5)}} - {{vacation.dateHeureFin|slice(11,5)}} </h1>
                         {% endfor %}
                     </div>
                 </div>
