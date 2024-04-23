@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+
+    <!-- Formulaire -->
+    <div class="text-center">
+
+        <h1>Formulaire de rénitialisation de mot de passe</h1>
+        {{ form_start(form) }}
+
+            {{ form_row(form.new_pass, {
+                'attr': {'class': 'text-field', 'placeholder': 'Nouveau mot de passe'}
+            }) }}
+
+            {{ form_row(form.confirm_pass, {
+                'attr': {'class': 'text-field', 'placeholder': 'Confirmer'}
+            }) }}
+
+        {{ form_end(form) }}
+
+    </div>
+
+{% endblock %}
