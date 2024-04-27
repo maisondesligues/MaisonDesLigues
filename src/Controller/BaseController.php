@@ -299,6 +299,7 @@ class BaseController extends AbstractController {
 
             $formData = $form->getData();
             $licenceNumberInput = $formData['licence_number'];
+            $passwordInput = $formData['new_pass'];
 
             // Vérifier si l'identifiant existe dans la base de données
             $licenceFound = false;
@@ -311,12 +312,21 @@ class BaseController extends AbstractController {
             }
 
             if ($licenceFound) {
-            // Vérifier si le mot de passe enregisté est le même que dans la base de données
+                // Vérifier si le mot de passe enregisté est le même que dans la base de données
+                $mdpCheck = $this->verifierMDP($licenceNumberInput, $passwordInput);
+                // Si tout est bon, renvoie vers une pasge de confirmation
+                if ($mdpCheck) {
+                    $this->deleteCompte($licenceNumberInput);
+                    $this->addFlash('successSuprr', 'mot de passe invalide');
+                    return $this->redirectToRoute('accueil');
+                } else {
+                    $this->addFlash('erreurMdp', 'mot de passe invalide');
+                    return $this->redirectToRoute('accueil');
+                }
 
-            // Si tout est bon, renvoie vers une pasge de confirmation
-
-            // On supprime l'utilisateur de la bdd
-            return $this->redirectToRoute('app_demandeEnAttente');
+            } else {
+                $this->addFlash('danger', 'Aucun compte ne correspond a cet identifiant');
+                return $this->redirectToRoute('accueil');
             }
 
         }
@@ -418,11 +428,10 @@ class BaseController extends AbstractController {
     /**
      * Renvoie true si le mot de passe hashé correspont au mot de passe entré
      */
-    public function verifierMDP(Compte $compte, string $submittedPassword): bool {
-        $hashedPassword = $compte->getPassword();
-        $isPasswordCorrect = password_verify($submittedPassword, $hashedPassword);
-
-        if ($isPasswordCorrect)  return true;
+    public function verifierMDP(string $licencie, string $submittedPassword): bool {
+        
+        $user = $this->entityManager->getRepository(Compte::class)->findOneBy(['numlicence' => $licencie]);
+        if (password_verify($submittedPassword, $user->getPassword())) { return true; }
         return false;
     }
 
@@ -458,6 +467,18 @@ class BaseController extends AbstractController {
         }
 
         return null;
+    }
+
+    /**
+     * Supprime un compte de la bdd de part son numéro de licence
+     */
+    public function deleteCompte(string $numLicence){
+
+        $compteRepository = $this->entityManager->getRepository(Compte::class);
+        $compte = $compteRepository->findByLicenceNumber($numLicence);
+
+        $this->entityManager->remove($compte);
+        $this->entityManager->flush();
     }
 
 
