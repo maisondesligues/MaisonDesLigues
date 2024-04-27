@@ -11,6 +11,8 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\HttpFoundation\Request;
 use App\Service\MailerService;
+use App\Entity\Compte;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\AtelierRepository;
 use App\Repository\HotelRepository;
@@ -21,6 +23,7 @@ use App\Service\AppParameters;
 class BaseController extends AbstractController {
     private $httpClient;
     private $mailerService;
+    private $entityManager;
 
     /**
      * Renvoie vers la page d'accueil du site web
@@ -35,9 +38,10 @@ class BaseController extends AbstractController {
     /**
      * Instancie l'utilisation de l'api
      */
-    public function __construct(HttpClientInterface $httpClient, MailerService $mailerService) {
+    public function __construct(HttpClientInterface $httpClient, MailerService $mailerService, EntityManagerInterface $entityManager) {
         $this->httpClient = $httpClient;
         $this->mailerService = $mailerService;
+        $this->entityManager = $entityManager;
     }
 
 // ---------------------------------------------------------------------------------------------------
@@ -107,6 +111,7 @@ class BaseController extends AbstractController {
 
             $formData = $form->getData();
             $licenceNumberInput = $formData['licence_number'];
+            $password = $formData['confirm_pass'];
             $mail = "";
             
             /**
@@ -151,20 +156,19 @@ class BaseController extends AbstractController {
                 if ($formData['new_pass'] === $formData['confirm_pass']) {
 
                     // Génère un token de 32 caractères
-                    $token = bin2hex(openssl_random_pseudo_bytes(16));
+                    $token = $this->createCompte($mail, $password, $licenceNumberInput, ['INSCRIT']);
 
                     // enregistrer les infos dans la table client
-                    $link = 'https://votre-domaine.com/confirm?token=' . $token;
+                    $link = $this->generateUrl('app_routeDeConfirmation', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL);
 
                     // Mail a envoyer
                     $this->mailerService->sendEmail(
                         'mdl-no-reply@gmail.com',
                         $mail,
                         'Inscription',
-                        'Votre inscription a été retenue, merci de cliquer sur le lien suivant pour confirmer votre inscription :'
+                        'Votre inscription a été retenue, merci de cliquer sur le lien suivant pour confirmer votre inscription :' . $link
                     );
 
-                    // Enregistre le licencié dans la bdd
                     return $this->redirectToRoute('app_demandeEnAttente');
 
                 } else {
@@ -180,6 +184,32 @@ class BaseController extends AbstractController {
         return $this->render('inscription.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+
+// ---------------------------------------------------------------------------------------------------
+
+    /**
+     * Confirmation de compte inscrit
+     */
+    #[Route('/confirm', name: 'app_routeDeConfirmation')]
+    public function confirmAccount(Request $request): Response {
+        $token = $request->query->get('token');
+        $repository = $this->getDoctrine()->getRepository(Compte::class);
+        $compte = $repository->findOneBy(['confirmationToken' => $token]);
+
+        if ($compte && $compte->getTokenExpiresAt() > new \DateTime()) {
+            // Token valide et pas expiré
+            $compte->setConfirmationToken(null);
+            $compte->setTokenExpiresAt(null);
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Votre compte a été confirmé.');
+            return $this->redirectToRoute('accueil');
+        } else {
+            $this->addFlash('error', 'Le token est invalide ou a expiré.');
+            return $this->redirectToRoute('app_inscription');
+        }
     }
 
 // ---------------------------------------------------------------------------------------------------
@@ -369,6 +399,29 @@ class BaseController extends AbstractController {
         }
 
         return null;
+    }
+
+
+    /**
+     * Créer un compte et renvoie un token
+     */
+    public function createCompte(string $mail, string $password, string $licenceNumber, array $roles): string {
+
+        $token = bin2hex(random_bytes(16));
+
+        $compte = new Compte();
+        $compte->setEmail($mail);
+        $compte->setNumlicence($licenceNumber);
+        $compte->setPassword($password);
+        $compte->setRoles($roles);
+
+        $compte->setConfirmationToken($token);
+        $compte->setTokenExpiresAt(new \DateTimeImmutable('+24 hours'));
+
+        $this->entityManager->persist($compte);
+        $this->entityManager->flush();
+
+        return $token;
     }
 }
 
