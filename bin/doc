@@ -1,0 +1,11 @@
+LANCER LES SERVEURS
+
+Mise en place de l'api :
+- Création de l'api en local
+- On compresse l'api pour faciliter son transfert
+- On moove l'api dans le fichier /var/www/html
+- On rajoute un virtual host sous apache avec comme port 8080 (règle) pointant sur le dossier concerné
+sur le fichier /etc/apache2/sites-available/000-default.conf
+- On relance apache
+- On ouvre un tunnel ssh pour pouvoir se connecte à l'api en local
+- On se connecte depuis le port web attribué
