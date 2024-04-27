@@ -14,17 +14,27 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\AtelierRepository;
 use App\Repository\HotelRepository;
 use App\Repository\CategorieChambreRepository;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use App\Service\AppParameters;
 
 class BaseController extends AbstractController {
+    private $httpClient;
 
     /**
-     * AJOUTER DES COMMENTAIRES
+     * Renvoie vers la page d'accueil du site web
      */
     #[Route('', name: 'app_base')]
     public function index(){
-    return $this->render('accueil/index.html.twig');
-    
+        return $this->render('accueil/index.html.twig');
+    }
+
+// ---------------------------------------------------------------------------------------------------
+
+    /**
+     * Instancie l'utilisation de l'api
+     */
+    public function __construct(HttpClientInterface $httpClient) {
+        $this->httpClient = $httpClient;
     }
 
 // ---------------------------------------------------------------------------------------------------
@@ -76,6 +86,8 @@ class BaseController extends AbstractController {
     #[Route('/inscription', name: 'app_inscription')]
     public function inscription(Request $request): Response {
         
+        $licencies = $this->getNumerosDeLicence();
+
         $form = $this->createFormBuilder()
             ->add('licence_number', TextType::class, ['label' => false])
             ->add('new_pass', PasswordType::class, ['label' => false])
@@ -91,6 +103,7 @@ class BaseController extends AbstractController {
         if ($form->isSubmitted()) {
 
             $formData = $form->getData();
+            $licenceNumberInput = $formData['licence_number'];
             
             /**
              * Mot de passe oublié
@@ -102,11 +115,28 @@ class BaseController extends AbstractController {
 
             if ($form->get('continue')->isClicked()) {
                 
-                // Vérifier si le compte existe déja
-                // Si c'est le cas, renvoie vers la page de connexion
+                // Vérification de licence
+                $licenceFound = false;
+                foreach ($licencies as $licencie) {
+                    error_log("Vérification du numéro de licence: " . $licencie);
 
-                // Si le compte n'existe pas
-                // Renvoie vers la page d'accueil avec un message
+                    if ($licencie == $licenceNumberInput) {
+                        $licenceFound = true;
+                        break;
+                    }
+                }
+
+                if (!$licenceFound) {
+                    // Si aucun numéro de licence ne correspond, rediriger vers Accueil
+                    error_log("Numéro de licence non trouvé: " . $licenceNumberInput);
+                    
+                    $this->addFlash(
+                        'danger',
+                        'Le numéro de licence saisi ne correspond pas.'
+                    );    
+                    
+                    return $this->redirectToRoute('accueil');
+                }
 
                 /**
                  * Les mots de passe correspondent
@@ -277,6 +307,24 @@ class BaseController extends AbstractController {
         return $this->render('securite/renitialiser_motdepasse.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+
+// ---------------------------------------------------------------------------------------------------
+
+    public function getNumerosDeLicence(): array {
+
+        $response = $this->httpClient->request('GET', 'http://localhost:8888/api/licencies');
+        $content = $response->toArray();
+
+        $numerosDeLicence = [];
+        foreach ($content['hydra:member'] as $licencie) {
+
+            if (isset($licencie['numlicence'])) {
+                $numerosDeLicence[] = $licencie['numlicence'];
+            }
+        }
+
+        return $numerosDeLicence;
     }
 }
 
