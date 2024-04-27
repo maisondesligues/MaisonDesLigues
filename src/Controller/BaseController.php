@@ -10,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Service\MailerService;
 use App\Entity\Compte;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -24,6 +25,7 @@ class BaseController extends AbstractController {
     private $httpClient;
     private $mailerService;
     private $entityManager;
+    private $passwordHasher;
 
     /**
      * Renvoie vers la page d'accueil du site web
@@ -38,10 +40,11 @@ class BaseController extends AbstractController {
     /**
      * Instancie l'utilisation de l'api
      */
-    public function __construct(HttpClientInterface $httpClient, MailerService $mailerService, EntityManagerInterface $entityManager) {
+    public function __construct(HttpClientInterface $httpClient, MailerService $mailerService, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher) {
         $this->httpClient = $httpClient;
         $this->mailerService = $mailerService;
         $this->entityManager = $entityManager;
+        $this->passwordHasher = $passwordHasher;
     }
 
 // ---------------------------------------------------------------------------------------------------
@@ -113,7 +116,7 @@ class BaseController extends AbstractController {
             $licenceNumberInput = $formData['licence_number'];
             $password = $formData['confirm_pass'];
             $mail = "";
-            
+
             /**
              * Mot de passe oublié
              */
@@ -123,7 +126,18 @@ class BaseController extends AbstractController {
             }
 
             if ($form->get('continue')->isClicked()) {
+
+                if (strlen($password) < 12 || !preg_match('/[A-Z]/', $password)) {
+                    $this->addFlash('danger', "Le mot de passe doit contenir au moins 12 caractères dont une majuscule.");
+                    return $this->redirectToRoute('app_inscription');
+                }
                 
+                foreach ($this->getNumerosDeLicenceComptes() as $comp) {
+                    if ($comp == $licenceNumberInput) {
+                        return $this->render('accueil/index.html.twig');
+                    }
+                }
+
                 // Vérification de licence
                 $licenceFound = false;
                 foreach ($licencies as $licencie) {
@@ -284,14 +298,26 @@ class BaseController extends AbstractController {
         if ($form->isSubmitted()) {
 
             $formData = $form->getData();
+            $licenceNumberInput = $formData['licence_number'];
 
             // Vérifier si l'identifiant existe dans la base de données
+            $licenceFound = false;
+            foreach ($this->getNumerosDeLicenceComptes() as $comp) {
+                if ($comp == $licenceNumberInput) {
+                    
+                    $licenceFound = true;
+                    break;
+                }
+            }
+
+            if ($licenceFound) {
             // Vérifier si le mot de passe enregisté est le même que dans la base de données
 
             // Si tout est bon, renvoie vers une pasge de confirmation
 
             // On supprime l'utilisateur de la bdd
             return $this->redirectToRoute('app_demandeEnAttente');
+            }
 
         }
         
@@ -355,12 +381,6 @@ class BaseController extends AbstractController {
             'form' => $form->createView(),
         ]);
     }
-// ---------------------------------------------------------------------------------------------------
-
-#[Route('/confirmationMail/{token}', name: 'app_confirmerMail')]
-    public function confirmationMail($token): Response {
-
-    }
 
 // ---------------------------------------------------------------------------------------------------
 
@@ -381,6 +401,45 @@ class BaseController extends AbstractController {
         }
 
         return $numerosDeLicence;
+    }
+
+    /**
+     * Renvoie la liste des numéros de licenciés parmis les comptes
+     */
+    public function getNumerosDeLicenceComptes(): array {
+        $comptes = $this->entityManager->getRepository(Compte::class)->findAll();
+        $numerosDeLicence = [];
+        foreach ($comptes as $compte) {
+            $numerosDeLicence[] = $compte->getNumlicence();
+        }
+        return $numerosDeLicence;
+    }
+
+    /**
+     * Renvoie true si le mot de passe hashé correspont au mot de passe entré
+     */
+    public function verifierMDP(Compte $compte, string $submittedPassword): bool {
+        $hashedPassword = $compte->getPassword();
+        $isPasswordCorrect = password_verify($submittedPassword, $hashedPassword);
+
+        if ($isPasswordCorrect)  return true;
+        return false;
+    }
+
+    /**
+     * Renvoie true si le token du compte est validé
+     */
+    public function getTokenValidation(string $token): bool {
+        $compte = $this->entityManager->getRepository(Compte::class)->findOneBy(['confirmationToken' => $token]);
+        return $compte ? $compte->getConfirmationToken() === null : false;
+    }
+
+    /**
+     * Renvoie le token du compte
+     */
+    public function getTokenByLicenceNumber(string $licenceNumber): ?string {
+        $compte = $this->entityManager->getRepository(Compte::class)->findOneBy(['numlicence' => $licenceNumber]);
+        return $compte ? $compte->getConfirmationToken() : null;
     }
 
     /**
@@ -412,9 +471,9 @@ class BaseController extends AbstractController {
         $compte = new Compte();
         $compte->setEmail($mail);
         $compte->setNumlicence($licenceNumber);
-        $compte->setPassword($password);
-        $compte->setRoles($roles);
 
+        $compte->setPassword(password_hash($password, PASSWORD_DEFAULT));
+        $compte->setRoles($roles);
         $compte->setConfirmationToken($token);
         $compte->setTokenExpiresAt(new \DateTimeImmutable('+24 hours'));
 
