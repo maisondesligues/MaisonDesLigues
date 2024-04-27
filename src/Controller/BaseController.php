@@ -10,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\HttpFoundation\Request;
+use App\Service\MailerService;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\AtelierRepository;
 use App\Repository\HotelRepository;
@@ -19,6 +20,7 @@ use App\Service\AppParameters;
 
 class BaseController extends AbstractController {
     private $httpClient;
+    private $mailerService;
 
     /**
      * Renvoie vers la page d'accueil du site web
@@ -33,8 +35,9 @@ class BaseController extends AbstractController {
     /**
      * Instancie l'utilisation de l'api
      */
-    public function __construct(HttpClientInterface $httpClient) {
+    public function __construct(HttpClientInterface $httpClient, MailerService $mailerService) {
         $this->httpClient = $httpClient;
+        $this->mailerService = $mailerService;
     }
 
 // ---------------------------------------------------------------------------------------------------
@@ -104,6 +107,7 @@ class BaseController extends AbstractController {
 
             $formData = $form->getData();
             $licenceNumberInput = $formData['licence_number'];
+            $mail = "";
             
             /**
              * Mot de passe oublié
@@ -121,7 +125,10 @@ class BaseController extends AbstractController {
                     error_log("Vérification du numéro de licence: " . $licencie);
 
                     if ($licencie == $licenceNumberInput) {
+
                         $licenceFound = true;
+                        $mail = $this->getEmailDeLicenceNumber($licencie);
+
                         break;
                     }
                 }
@@ -143,11 +150,21 @@ class BaseController extends AbstractController {
                  */
                 if ($formData['new_pass'] === $formData['confirm_pass']) {
 
+                    // Génère un token de 32 caractères
+                    $token = bin2hex(openssl_random_pseudo_bytes(16));
+
                     // enregistrer les infos dans la table client
+                    $link = 'https://votre-domaine.com/confirm?token=' . $token;
+
                     // Mail a envoyer
-                    // Demande prise en compte
+                    $this->mailerService->sendEmail(
+                        'mdl-no-reply@gmail.com',
+                        $mail,
+                        'Inscription',
+                        'Votre inscription a été retenue, merci de cliquer sur le lien suivant pour confirmer votre inscription :'
+                    );
+
                     // Enregistre le licencié dans la bdd
-                    // lui envoie un mail de confirmation
                     return $this->redirectToRoute('app_demandeEnAttente');
 
                 } else {
@@ -308,9 +325,18 @@ class BaseController extends AbstractController {
             'form' => $form->createView(),
         ]);
     }
+// ---------------------------------------------------------------------------------------------------
+
+#[Route('/confirmationMail/{token}', name: 'app_confirmerMail')]
+    public function confirmationMail($token): Response {
+
+    }
 
 // ---------------------------------------------------------------------------------------------------
 
+    /**
+     * Renvoie la liste des numéros de licenciés
+     */
     public function getNumerosDeLicence(): array {
 
         $response = $this->httpClient->request('GET', 'http://localhost:8888/api/licencies');
@@ -325,6 +351,24 @@ class BaseController extends AbstractController {
         }
 
         return $numerosDeLicence;
+    }
+
+    /**
+     * Renvoie l'email du licencié passé en paramètre
+     */
+    public function getEmailDeLicenceNumber(int $licenceNumber): ?string {
+
+        $response = $this->httpClient->request('GET', 'http://localhost:8888/api/licencies');
+
+        $content = $response->toArray();
+
+        foreach ($content['hydra:member'] as $licencie) {
+            if ($licencie['numlicence'] === $licenceNumber) {
+                return $licencie['mail'];
+            }
+        }
+
+        return null;
     }
 }
 
