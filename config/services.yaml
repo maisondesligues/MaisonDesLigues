@@ -23,6 +23,8 @@ parameters:
     diner: "Dîner"
     pleniere_conclu: "Plénière-Conclusion"
 
+    lien_api: "http://localhost:8888/api/"
+
 services:
     App\Service\AppParameters:
         arguments:

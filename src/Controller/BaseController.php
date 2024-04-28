@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Repository\VacationRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -10,50 +9,63 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use App\Service\MailerService;
-use App\Entity\Compte;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Doctrine\ORM\EntityManagerInterface;
+
+use App\Repository\VacationRepository;
 use App\Repository\AtelierRepository;
 use App\Repository\HotelRepository;
 use App\Repository\CategorieChambreRepository;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
+use App\Service\MailerService;
+use App\Entity\Compte;
+use App\Outils\CompteOutils;
+use App\Outils\LicencieOutils;
 use App\Service\AppParameters;
+use App\Outils\Security\PasswordManagement;
+use App\Outils\Security\TokenManagement;
+
+// ---------------------------------------------------------------------------------------------------
 
 class BaseController extends AbstractController {
-    private $httpClient;
+    
     private $mailerService;
-    private $entityManager;
-    private $passwordHasher;
+    private $compteOutils;
+    private $licencieOutils;
+    private $passwordManagement;
+    private $tokenManagement;
 
     /**
-     * Renvoie vers la page d'accueil du site web
+     * Constructeur du controlleur
+     */
+    public function __construct(MailerService $mailerService, CompteOutils $compteOutils, LicencieOutils $licencieOutils, 
+        PasswordManagement $passwordManagement, TokenManagement $tokenManagement) {
+
+        $this->mailerService = $mailerService;
+        $this->compteOutils = $compteOutils;
+        $this->licencieOutils = $licencieOutils;
+        $this->passwordManagement = $passwordManagement;
+        $this->tokenManagement = $tokenManagement;
+    }
+    
+    // ---------------------------------------------------------------------------------------------------
+    
+    /**
+     * Renvoie vers la page d'accueil de connexion de mdl
      */
     #[Route('', name: 'app_base')]
     public function index(){
         return $this->render('accueil/index.html.twig');
     }
 
-// ---------------------------------------------------------------------------------------------------
-
-    /**
-     * Instancie l'utilisation de l'api
-     */
-    public function __construct(HttpClientInterface $httpClient, MailerService $mailerService, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher) {
-        $this->httpClient = $httpClient;
-        $this->mailerService = $mailerService;
-        $this->entityManager = $entityManager;
-        $this->passwordHasher = $passwordHasher;
-    }
-
-// ---------------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------
     
     /**
      * Renvoie vers la page d'accueil de MDL
      */
     #[Route('/accueil', name: 'accueil')]
-    public function accueil(AtelierRepository $atelierRepository, HotelRepository $hotelRepository, CategorieChambreRepository $categorieChambreRepository, VacationRepository $vacationRepository, AppParameters $appParameters): Response {
+    public function accueil(AtelierRepository $atelierRepository, HotelRepository $hotelRepository, 
+        CategorieChambreRepository $categorieChambreRepository, VacationRepository $vacationRepository, 
+        AppParameters $appParameters): Response {
+
         $ateliers = $atelierRepository->findAll();
         $hotels = $hotelRepository->findAll();
         $vacation = $vacationRepository->findAll();
@@ -62,6 +74,7 @@ class BaseController extends AbstractController {
         $budgetDouble = $appParameters->getBudgetHotelDoublePrix();
         $ibisSingle = $appParameters->getIbisHotelSinglePrix();
         $ibisDouble = $appParameters->getIbisHotelDoublePrix();
+
         return $this->render('accueil/accueil.html.twig', [
                     'ateliers' => $ateliers,
                     'hotels' => $hotels,
@@ -77,105 +90,97 @@ class BaseController extends AbstractController {
 // ---------------------------------------------------------------------------------------------------
 
     /**
-     * Route test affichage ateliers
-     */
-    #[Route('/ateliers', name: 'ateliers_list')]
-    public function listAteliers(AtelierRepository $atelierRepository): Response {
-        $ateliers = $atelierRepository->findAll();
-
-        return $this->render('list.html.twig', [
-                    'ateliers' => $ateliers,
-        ]);
-    }
-
-// ---------------------------------------------------------------------------------------------------
-
-    /**
      * Renvoie vers la page d'inscription d'un licencié
      */
     #[Route('/inscription', name: 'app_inscription')]
     public function inscription(Request $request): Response {
         
-        $licencies = $this->getNumerosDeLicence();
+        // Récupère les numéros de licenciés de la table "Licencie"
+        $licencies = $this->licencieOutils->getNumerosDeLicence();
 
+        // Création du formulaire
         $form = $this->createFormBuilder()
+
             ->add('licence_number', TextType::class, ['label' => false])
             ->add('new_pass', PasswordType::class, ['label' => false])
             ->add('confirm_pass', PasswordType::class, ['label' => false])
 
             ->add('cancel_demand', SubmitType::class, ['label' => 'Annuler une demande', 'attr' => ['formnovalidate' => 'formnovalidate']])
             ->add('continue', SubmitType::class, ['label' => 'Enregistrer ma demande'])
+            
             ->getForm();
             
         $form->handleRequest($request);
 
-        
+    // Si le formulaire est envoyé ----------------------------------------------------------------------------
         if ($form->isSubmitted()) {
 
+            // On récupère les données du formulaire et on en prépare d'autres
             $formData = $form->getData();
             $licenceNumberInput = $formData['licence_number'];
             $password = $formData['confirm_pass'];
             $mail = "";
 
-            /**
-             * Mot de passe oublié
-             */
+        // Si le bouton "Annuler" est cliqué ----------------------------------------------------------------------------
             if ($form->get('cancel_demand')->isClicked()) {
 
+                // Renvoie vers la page d'annulation de demande
                 return $this->redirectToRoute('app_cancelDemand');
             }
 
+        // Si le bouton "Confirmer" du formulaire est cliqué ----------------------------------------------------------------------------
             if ($form->get('continue')->isClicked()) {
 
+                // Si le mot de passe fait moins de 12 caractères et ne contient pas au moins une majuscule
                 if (strlen($password) < 12 || !preg_match('/[A-Z]/', $password)) {
+
+                    // Affichage d'un modal avec rechargement de la page
                     $this->addFlash('danger', "Le mot de passe doit contenir au moins 12 caractères dont une majuscule.");
                     return $this->redirectToRoute('app_inscription');
                 }
-                
-                foreach ($this->getNumerosDeLicenceComptes() as $comp) {
-                    if ($comp == $licenceNumberInput) {
-                        return $this->render('accueil/index.html.twig');
-                    }
-                }
 
-                // Vérification de licence
+            // On vérifie la licence ----------------------------------------------------------------------------
                 $licenceFound = false;
+
+                // Pour chaque numéro de licence dans la table licencie ----------------------------------------------------------------------------
                 foreach ($licencies as $licencie) {
+
+                    // Renvoie le numéro de licence vérifié en log
                     error_log("Vérification du numéro de licence: " . $licencie);
 
+                // Si les numéro de licences correspondent ----------------------------------------------------------------------------
                     if ($licencie == $licenceNumberInput) {
 
+                        // La licence est trouvée, on récupère le mail du licencié
                         $licenceFound = true;
-                        $mail = $this->getEmailDeLicenceNumber($licencie);
+                        $mail = $this->licencieOutils->getEmailDeLicenceNumber($licencie);
 
+                        // Sort de la boucle
                         break;
                     }
                 }
 
+            // Si la licence n'est pas trouvée ----------------------------------------------------------------------------
                 if (!$licenceFound) {
-                    // Si aucun numéro de licence ne correspond, rediriger vers Accueil
-                    error_log("Numéro de licence non trouvé: " . $licenceNumberInput);
-                    
+
+                    // Renvoie vers l'accueil avec affichage d'un modal
                     $this->addFlash(
                         'danger',
                         'Le numéro de licence saisi ne correspond pas.'
                     );    
                     
+                    // Renvoie vers la page d'accueil
                     return $this->redirectToRoute('accueil');
                 }
 
-                /**
-                 * Les mots de passe correspondent
-                 */
+            // Si les mot de passes correspondent ----------------------------------------------------------------------------
                 if ($formData['new_pass'] === $formData['confirm_pass']) {
 
-                    // Génère un token de 32 caractères
-                    $token = $this->createCompte($mail, $password, $licenceNumberInput, ['INSCRIT']);
-
-                    // enregistrer les infos dans la table client
+                    // Génère un token de 32 caractères en créer un lien de confirmation
+                    $token = $this->compteOutils->createCompte($mail, $password, $licenceNumberInput, ['INSCRIT']);
                     $link = $this->generateUrl('app_routeDeConfirmation', ['token' => $token], UrlGeneratorInterface::ABSOLUTE_URL);
 
-                    // Mail a envoyer
+                    // Envoie un mail au concerné licencié avec son lien de confirmation
                     $this->mailerService->sendEmail(
                         'mdl-no-reply@gmail.com',
                         $mail,
@@ -183,18 +188,23 @@ class BaseController extends AbstractController {
                         'Votre inscription a été retenue, merci de cliquer sur le lien suivant pour confirmer votre inscription :' . $link
                     );
 
+                    // Renvoie vers la page de confirmation de demande
                     return $this->redirectToRoute('app_demandeEnAttente');
 
-                } else {
+                }
 
+            // Si les mot de passes ne correspondent pas ----------------------------------------------------------------------------
+                else {
+
+                    // Affichage d'un modal et rechargement du formulaire
                     $this->addFlash('error', 'Les mots de passe ne correspondent pas.');
-                    // on recharge le formulaire
                     return $this->redirectToRoute('app_inscription');
 
                 }
             }
         }
 
+        // Crée le formulaire et affiche la page d'inscription ----------------------------------------------------------------------------
         return $this->render('inscription.html.twig', [
             'form' => $form->createView(),
         ]);
@@ -203,27 +213,120 @@ class BaseController extends AbstractController {
 // ---------------------------------------------------------------------------------------------------
 
     /**
-     * Confirmation de compte inscrit
+     * Route vers la page de confirmation d'un licencié, utilisé avec un token
      */
     #[Route('/confirm', name: 'app_routeDeConfirmation')]
     public function confirmAccount(Request $request): Response {
+
+        // Récupère le token entré dans l'URL
         $token = $request->query->get('token');
+
+        // Récupère le repository de Compte
         $repository = $this->getDoctrine()->getRepository(Compte::class);
+
+        // On récupère le Compte associé au token
         $compte = $repository->findOneBy(['confirmationToken' => $token]);
 
+        // Si le compte existe et si le token n'est pas expiré -----------------------------------------------------------------
         if ($compte && $compte->getTokenExpiresAt() > new \DateTime()) {
-            // Token valide et pas expiré
-            $compte->setConfirmationToken(null);
-            $compte->setTokenExpiresAt(null);
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->flush();
 
+            // Annule le token de la Table
+            $this->tokenManagement->confirmationToken($compte);
+
+            // Renvoie vers la page d'accueil avec affichage d'un modal
             $this->addFlash('success', 'Votre compte a été confirmé.');
             return $this->redirectToRoute('accueil');
-        } else {
+        } 
+        
+        // Le compte n'existe pas ou le token est expiré -----------------------------------------------------------------
+        else {
+
+            // Renvoie vers la page d'inscription avec affichage d'un modal
             $this->addFlash('error', 'Le token est invalide ou a expiré.');
             return $this->redirectToRoute('app_inscription');
         }
+    }
+
+// ---------------------------------------------------------------------------------------------------
+
+    /**
+     * Renvoie vers la page d'annulation de la demande de création de compte
+     */
+    #[Route('/cancelDemand', name: 'app_cancelDemand')]
+    public function cancelDemand(Request $request): Response {
+
+        // Création du formulaire
+        $form = $this->createFormBuilder()
+            ->add('licence_number', TextType::class, ['label' => false])
+            ->add('new_pass', PasswordType::class, ['label' => false])
+
+            ->add('cancel_demand', SubmitType::class, ['label' => 'Annuler une demande'])
+            ->getForm();
+            
+        $form->handleRequest($request);
+
+    // Si le formulaire est envoyé ---------------------------------------------------------------------------------------------------
+        if ($form->isSubmitted()) {
+
+            // On récupère les données du formulaire
+            $formData = $form->getData();
+            $licenceNumberInput = $formData['licence_number'];
+            $passwordInput = $formData['new_pass'];
+
+        // On vérifie si l'identifiant existe dans la base de données ---------------------------------------------------------------------------------------------------
+            $licenceFound = false;
+
+            foreach ($this->licencieOutils->getNumerosDeLicenceComptes() as $comp) {
+
+                // Si l'identifiant existe ---------------------------------------------------------------------------------------------------
+                if ($comp == $licenceNumberInput) {
+                    
+                    $licenceFound = true;
+
+                    // On sort de la boucle
+                    break;
+                }
+            }
+
+        // Si l'identifiant a été trouvé ---------------------------------------------------------------------------------------------------
+            if ($licenceFound) {
+
+                // On vérifie si le mot de passe enregisté est le même que dans la base de données
+                $mdpCheck = $this->passwordManagement->verifierMDP($licenceNumberInput, $passwordInput);
+
+            // Si le mot de passe est bon --------------------------------------------------------------------------------------------------
+                if ($mdpCheck) {
+
+                    // On supprime le compte de la BDD et on renvoie vers l'accueil avec l'affichage d'un modal
+                    $this->compteOutils->deleteCompte($licenceNumberInput);
+                    $this->addFlash('successSuprr', 'mot de passe invalide');
+                    return $this->redirectToRoute('accueil');
+                }
+                
+            // Si le mot de passe n'est pas bon ---------------------------------------------------------------------------------------------------
+                else {
+
+                    // On renvoie vers l'accueil en affichant un modal
+                    $this->addFlash('erreurMdp', 'mot de passe invalide');
+                    return $this->redirectToRoute('accueil');
+                }
+
+            }
+            
+        // Si l'identifiant n'a pas été trouvé ---------------------------------------------------------------------------------------------------
+            else {
+
+                // On renvoie vers l'accueil en affichant un modal
+                $this->addFlash('danger', 'Aucun compte ne correspond a cet identifiant');
+                return $this->redirectToRoute('accueil');
+            }
+
+        }
+        
+        // Crée le formulaire et affiche la page d'annulation de demande de création du compte
+        return $this->render('cancelDemand.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 
 // ---------------------------------------------------------------------------------------------------
@@ -274,64 +377,6 @@ class BaseController extends AbstractController {
         }
 
         return $this->render('securite/mdpOubliee.html.twig', [
-            'form' => $form->createView(),
-        ]);
-    }
-
-// ---------------------------------------------------------------------------------------------------
-
-    /**
-     * Annuler une demande
-     */
-    #[Route('/cancelDemand', name: 'app_cancelDemand')]
-    public function cancelDemand(Request $request): Response {
-
-        $form = $this->createFormBuilder()
-            ->add('licence_number', TextType::class, ['label' => false])
-            ->add('new_pass', PasswordType::class, ['label' => false])
-
-            ->add('cancel_demand', SubmitType::class, ['label' => 'Annuler une demande'])
-            ->getForm();
-            
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted()) {
-
-            $formData = $form->getData();
-            $licenceNumberInput = $formData['licence_number'];
-            $passwordInput = $formData['new_pass'];
-
-            // Vérifier si l'identifiant existe dans la base de données
-            $licenceFound = false;
-            foreach ($this->getNumerosDeLicenceComptes() as $comp) {
-                if ($comp == $licenceNumberInput) {
-                    
-                    $licenceFound = true;
-                    break;
-                }
-            }
-
-            if ($licenceFound) {
-                // Vérifier si le mot de passe enregisté est le même que dans la base de données
-                $mdpCheck = $this->verifierMDP($licenceNumberInput, $passwordInput);
-                // Si tout est bon, renvoie vers une pasge de confirmation
-                if ($mdpCheck) {
-                    $this->deleteCompte($licenceNumberInput);
-                    $this->addFlash('successSuprr', 'mot de passe invalide');
-                    return $this->redirectToRoute('accueil');
-                } else {
-                    $this->addFlash('erreurMdp', 'mot de passe invalide');
-                    return $this->redirectToRoute('accueil');
-                }
-
-            } else {
-                $this->addFlash('danger', 'Aucun compte ne correspond a cet identifiant');
-                return $this->redirectToRoute('accueil');
-            }
-
-        }
-        
-        return $this->render('cancelDemand.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -392,116 +437,5 @@ class BaseController extends AbstractController {
         ]);
     }
 
-// ---------------------------------------------------------------------------------------------------
-
-    /**
-     * Renvoie la liste des numéros de licenciés
-     */
-    public function getNumerosDeLicence(): array {
-
-        $response = $this->httpClient->request('GET', 'http://localhost:8888/api/licencies');
-        $content = $response->toArray();
-
-        $numerosDeLicence = [];
-        foreach ($content['hydra:member'] as $licencie) {
-
-            if (isset($licencie['numlicence'])) {
-                $numerosDeLicence[] = $licencie['numlicence'];
-            }
-        }
-
-        return $numerosDeLicence;
-    }
-
-    /**
-     * Renvoie la liste des numéros de licenciés parmis les comptes
-     */
-    public function getNumerosDeLicenceComptes(): array {
-        $comptes = $this->entityManager->getRepository(Compte::class)->findAll();
-        $numerosDeLicence = [];
-        foreach ($comptes as $compte) {
-            $numerosDeLicence[] = $compte->getNumlicence();
-        }
-        return $numerosDeLicence;
-    }
-
-    /**
-     * Renvoie true si le mot de passe hashé correspont au mot de passe entré
-     */
-    public function verifierMDP(string $licencie, string $submittedPassword): bool {
-        
-        $user = $this->entityManager->getRepository(Compte::class)->findOneBy(['numlicence' => $licencie]);
-        if (password_verify($submittedPassword, $user->getPassword())) { return true; }
-        return false;
-    }
-
-    /**
-     * Renvoie true si le token du compte est validé
-     */
-    public function getTokenValidation(string $token): bool {
-        $compte = $this->entityManager->getRepository(Compte::class)->findOneBy(['confirmationToken' => $token]);
-        return $compte ? $compte->getConfirmationToken() === null : false;
-    }
-
-    /**
-     * Renvoie le token du compte
-     */
-    public function getTokenByLicenceNumber(string $licenceNumber): ?string {
-        $compte = $this->entityManager->getRepository(Compte::class)->findOneBy(['numlicence' => $licenceNumber]);
-        return $compte ? $compte->getConfirmationToken() : null;
-    }
-
-    /**
-     * Renvoie l'email du licencié passé en paramètre
-     */
-    public function getEmailDeLicenceNumber(int $licenceNumber): ?string {
-
-        $response = $this->httpClient->request('GET', 'http://localhost:8888/api/licencies');
-
-        $content = $response->toArray();
-
-        foreach ($content['hydra:member'] as $licencie) {
-            if ($licencie['numlicence'] === $licenceNumber) {
-                return $licencie['mail'];
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Supprime un compte de la bdd de part son numéro de licence
-     */
-    public function deleteCompte(string $numLicence){
-
-        $compteRepository = $this->entityManager->getRepository(Compte::class);
-        $compte = $compteRepository->findByLicenceNumber($numLicence);
-
-        $this->entityManager->remove($compte);
-        $this->entityManager->flush();
-    }
-
-
-    /**
-     * Créer un compte et renvoie un token
-     */
-    public function createCompte(string $mail, string $password, string $licenceNumber, array $roles): string {
-
-        $token = bin2hex(random_bytes(16));
-
-        $compte = new Compte();
-        $compte->setEmail($mail);
-        $compte->setNumlicence($licenceNumber);
-
-        $compte->setPassword(password_hash($password, PASSWORD_DEFAULT));
-        $compte->setRoles($roles);
-        $compte->setConfirmationToken($token);
-        $compte->setTokenExpiresAt(new \DateTimeImmutable('+24 hours'));
-
-        $this->entityManager->persist($compte);
-        $this->entityManager->flush();
-
-        return $token;
-    }
 }
 
