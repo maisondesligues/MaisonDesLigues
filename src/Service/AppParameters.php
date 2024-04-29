@@ -90,4 +90,9 @@ class AppParameters
     {
         return $this->params->get('pleniere_conclu');
     }
+
+    public function getLienApi()
+    {
+        return $this->params->get('lien_api');
+    }
 }

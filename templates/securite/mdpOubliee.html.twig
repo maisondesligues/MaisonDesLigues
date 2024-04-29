@@ -2,6 +2,60 @@
 
 {% block content %}
 
+    <div class="modal fade" id="NoUser" tabindex="-1" role="dialog" aria-labelledby="licenceModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="licenceModalLabel">Erreur</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Aucun utilisateur trouvé avec ces informations
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="NoData" tabindex="-1" role="dialog" aria-labelledby="licenceModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="licenceModalLabel">Erreur</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Vous devez fournir votre numéro de licence ou votre adresse email
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if app.flashes('danger') %}
+        <script>
+            $(document).ready(function(){
+                $('#NoData').modal('show');
+            });
+        </script>
+    {% endif %}
+
+    {% if app.flashes('error') %}
+        <script>
+            $(document).ready(function(){
+                $('#NoUser').modal('show');
+            });
+        </script>
+    {% endif %}
+
     <!-- Formulaire -->
     <div class="text-center">
 

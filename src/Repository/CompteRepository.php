@@ -21,6 +21,23 @@ class CompteRepository extends ServiceEntityRepository
         parent::__construct($registry, Compte::class);
     }
 
+
+    /**
+     * Trouve un Compte grâce à son numéro de licencié
+     */
+    public function findByLicenceNumber(string $licenceNumber): ?Compte
+    {
+        return $this->findOneBy(['numlicence' => $licenceNumber]);
+    }
+
+    /**
+     * Trouve un compte grâce à son email
+     */
+    public function findByEmail(string $email): ?Compte
+    {
+        return $this->findOneBy(['email' => $email]);
+    }
+    
 //    /**
 //     * @return Compte[] Returns an array of Compte objects
 //     */

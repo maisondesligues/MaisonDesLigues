@@ -50,6 +50,18 @@ class Compte
     private Collection $inscription;
 
     /**
+     * Token de confirmation pour la vérification de l'email
+     */
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $confirmationToken = null;
+
+    /**
+     * Date d'expiration du token de confirmation
+     */
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeInterface $tokenExpiresAt = null;
+
+    /**
      * Créer une instance Compte
      */
     public function __construct()
@@ -133,6 +145,42 @@ class Compte
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
+
+        return $this;
+    }
+
+    /**
+     * Retourne le token de confirmation
+     */
+    public function getConfirmationToken(): ?string
+    {
+        return $this->confirmationToken;
+    }
+
+    /**
+     * Définit le token de confirmation
+     */
+    public function setConfirmationToken(?string $confirmationToken): self
+    {
+        $this->confirmationToken = $confirmationToken;
+
+        return $this;
+    }
+
+    /**
+     * Retourne la date d'expiration du token
+     */
+    public function getTokenExpiresAt(): ?\DateTimeInterface
+    {
+        return $this->tokenExpiresAt;
+    }
+
+    /**
+     * Définit la date d'expiration du token
+     */
+    public function setTokenExpiresAt(?\DateTimeInterface $tokenExpiresAt): self
+    {
+        $this->tokenExpiresAt = $tokenExpiresAt;
 
         return $this;
     }
