@@ -26,7 +26,7 @@ use App\Outils\Security\TokenManagement;
 // ---------------------------------------------------------------------------------------------------
 
 class BaseController extends AbstractController {
-    
+
     private $mailerService;
     private $compteOutils;
     private $licencieOutils;
@@ -334,13 +334,13 @@ class BaseController extends AbstractController {
     /**
      * Renvoie vers la page mot de passe oublié
      * 
-     * Créer un token puis le stocker en bdd pour l'utilisateur courant
      * lui envoie un mail pour rénitialiser le mot de passe
      * le mail lui renverra un lien unique pour modifier son mot de passe
      */
     #[Route('/mdpoublie', name: 'app_mdpoublie')]
     public function mdpOublie(Request $request): Response {
 
+        // Création du formulaire
         $form = $this->createFormBuilder()
             ->add('licence_number', TextType::class, ['label' => false, 'required' => false,])
             ->add('adresse_mail', TextType::class, ['label' => false, 'required' => false,])
@@ -350,27 +350,103 @@ class BaseController extends AbstractController {
             
         $form->handleRequest($request);
 
+    // Si le formulaire est envoyé ---------------------------------------------------------------------------------------------------
         if ($form->isSubmitted()) {
 
+            // récupère les données du formulaire
             $formData = $form->getData();
             $licenceNumber = $formData['licence_number'];
             $adresseMail = $formData['adresse_mail'];
 
+        // Si aucune licence et adresse mail n'est rentrée ---------------------------------------------------------------------------------
             if (!$licenceNumber && !$adresseMail) {
 
-                $this->addFlash('error', 'Vous devez fournir votre numéro de licence ou votre adresse email.');
-            } else {
+                // Renvoie un modal et recharge la page
+                $this->addFlash('danger', 'Vous devez fournir votre numéro de licence ou votre adresse email.');
+                return $this->redirectToRoute('app_mdpoublie');
+            }
+        
+        // Si l'un des deux ou les deux est rentré -----------------------------------------------------------------------------------------------
+            else {
 
-                // on vérifie le numéro du licencié ou l'adresse mail
-                if (true) {
-                                
-                    // Mail a envoyer
-                    // Token a sauvegarder en bdd avec une date limite
-                    // Envoyer le token par email avec la route vers le formulaire de rénitialisation de mot de passe
-                    return $this->redirectToRoute('app_demandeEnAttente');
+                // génère un token aléatoire
+                $token = bin2hex(random_bytes(16));
 
-                } else {
+            // Si l'adresse mail est entrée ------------------------------------------------------------------------------------------
+                if ($adresseMail) {
 
+                    // On récupère la liste des mails présent en BDD dans la table Compte
+                    $listMail = $this->compteOutils->getMailsDeLicenceComptes();
+
+                    // Pour chaque adresse mail dans la table Compte
+                    foreach ($listMail as $mail) {
+
+                    // Si le mail de la table est le même que celui entrée ------------------------------------------------------------------------------------------
+                        if ($mail == $adresseMail) {
+
+                            // Récupère le numéro du licencié à partir du mail
+                            $numerolicencie = $this->compteOutils->getNumeroDeLicence($adresseMail);
+
+                            // Génère un lien renvoyant le token et le numéro du licencié
+                            $link = $this->generateUrl('renitialiser_motdepasse', ['token' => $token, 'numLicencie' => $numerolicencie], UrlGeneratorInterface::ABSOLUTE_URL);
+
+                            // Envoie un mail au concerné licencié avec son lien de confirmation et renvoie sur la page de demande en attente
+                            $this->mailerService->sendEmail(
+                                'mdl-no-reply@gmail.com',
+                                $adresseMail,
+                                'Changement de mot de passe',
+                                'Merci de cliquer sur ce lien pour changer votre mot de passe :' . $link
+                            );
+                            return $this->redirectToRoute('app_demandeEnAttente');
+                        }
+
+                    // Sinon, on sort de la boucle ------------------------------------------------------------------------------------------
+                        else {
+                            break;
+                        }
+                    }
+                }
+
+                
+                // Si le numéro de licencié est entré ------------------------------------------------------------------------------
+                if ($licenceNumber) {
+                    
+                    // Récupère tout les numéros de licence de la table Compte
+                    $listNumeroLicencies = $this->compteOutils->getNumerosDeLicenceComptes();
+
+                    // Pour chaque numero de licencie dans la table Compte
+                    foreach ($listNumeroLicencies as $numeroLicencies) {
+
+                    // Si le numéro de licence de la table est le même que celui entrée ------------------------------------------------------------------------------------------
+                        if ($numeroLicencies == $licenceNumber) {
+
+                            // Récupère le mail a partir du numéro de licencié
+                            $adresseMail = $this->compteOutils->getMailDeLicence($licenceNumber);
+
+                            // Génère un lien renvoyant le token et le numéro du licencié
+                            $link = $this->generateUrl('renitialiser_motdepasse', ['token' => $token, 'numLicencie' => $licenceNumber], UrlGeneratorInterface::ABSOLUTE_URL);
+
+                            // Envoie un mail au concerné licencié avec son lien de confirmation et renvoie sur la page de demande en attente
+                            $this->mailerService->sendEmail(
+                                'mdl-no-reply@gmail.com',
+                                $adresseMail,
+                                'Changement de mot de passe',
+                                'Merci de cliquer sur ce lien pour changer votre mot de passe :' . $link
+                            );
+                            return $this->redirectToRoute('app_demandeEnAttente');
+                        }
+
+                    // Sinon, on sort de la boucle ------------------------------------------------------------------------------------------
+                        else {
+                            break;
+                        }
+                    }
+                }
+                
+            // Si ni le mail ni le numéro de licencié n'est trouvé ------------------------------------------------------------------------------
+                else {
+
+                    // Renvoie un modal
                     $this->addFlash('error', 'Aucun utilisateur trouvé avec ces informations.');
                 }
             }
@@ -394,12 +470,23 @@ class BaseController extends AbstractController {
 
 // ---------------------------------------------------------------------------------------------------
 
-    #[Route('/renitialiserMotDePasse/{token}', name: 'renitialiser_motdepasse')]
+    /**
+     * Renvoie vers la page de rénitialisation de mot de passes
+     * Contient un token unique et un numéro de licencié en lien
+     */
+    #[Route('/renitialiserMotDePasse', name: 'renitialiser_motdepasse')]
     public function resetPassword($token, Request $request): Response {
 
-        // Recherchez l'utilisateur par token et vérifiez que le token n'est pas expiré
-        // Si le token n'est pas valide, on ne continue pas
+        // Récupère le token entré dans l'URL
+        $token = $request->query->get('token');
 
+        // Récupère le numéro de licencié entré dans l'URL
+        $numLicencie = $request->query->get('numLicencie');
+
+        // Récupère le mail du licencié
+        $mailLicencie = $this->compteOutils->getMailDeLicence($numLicencie);
+
+        // Crée le formulaire
         $form = $this->createFormBuilder()
             ->add('new_pass', PasswordType::class, ['label' => false])
             ->add('confirm_pass', PasswordType::class, ['label' => false])
@@ -409,29 +496,41 @@ class BaseController extends AbstractController {
             
         $form->handleRequest($request);
 
+    // Si le formulaire est confirmé ---------------------------------------------------------------------------------------------------
         if ($form->isSubmitted()) {
 
+            // On récupère les données du formulaire
             $formData = $form->getData();
+            $newPass = $formData['new_pass'];
+            $confirmPass = $formData['confirm_pass'];
             
-            /**
-             * Les mots de passe correspondent
-             */
-            if ($formData['new_pass'] === $formData['confirm_pass']) {
+        // Si les mots de passe correspondent ---------------------------------------------------------------------------------------------------
+            if ($newPass === $confirmPass) {
 
                 // On enregistre le nouveau mdp dans la bdd
-                // Envoie un mail de confirmation de confimation de changement de mot de passe
+                $this->compteOutils->updatePasswordByLicenceNumber($numLicencie, $newPass);
+
+                // Envoie un mail de confirmation de confimation de changement de mot de passe et renvoie vers la page de demandes en attente
+                $this->mailerService->sendEmail(
+                    'mdl-no-reply@gmail.com',
+                    $mailLicencie,
+                    'Changement mot de passe',
+                    'Votre mot de passe a été changé'
+                );
                 return $this->redirectToRoute('app_demandeEnAttente');
 
-            } else {
+            }
+            
+        // Si les mots de passe ne correspondent pas -------------------------------------------------------------------------
+            else {
 
+                // Renvoie un modal d'erreur
                 $this->addFlash('error', 'Les mots de passe ne correspondent pas.');
-                // on recharge le formulaire
-                return $this->redirectToRoute('renitialiser_motdepasse');
-
             }
             
         }
 
+        // Crée le formulaire et affiche la page de réniatioalisation de mot de passe
         return $this->render('securite/renitialiser_motdepasse.html.twig', [
             'form' => $form->createView(),
         ]);

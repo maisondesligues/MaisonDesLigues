@@ -57,4 +57,74 @@ class CompteOutils {
         $this->entityManager->remove($compte);
         $this->entityManager->flush();
     }
+
+    // ---------------------------------------------------------------------------------------------------
+
+    /**
+     * Renvoie la liste des mails de licenciés parmis la table Compte
+     */
+    public function getMailsDeLicenceComptes(): array {
+        $comptes = $this->entityManager->getRepository(Compte::class)->findAll();
+        $mailsDeLicence = [];
+        foreach ($comptes as $compte) {
+            $mailsDeLicence[] = $compte->getEmail();
+        }
+        return $mailsDeLicence;
+    }
+
+    // ---------------------------------------------------------------------------------------------------
+
+    /**
+     * Renvoie la liste des numéros de licenciés parmis la table Compte
+     */
+    public function getNumerosDeLicenceComptes(): array {
+        $comptes = $this->entityManager->getRepository(Compte::class)->findAll();
+        $numDeLicence = [];
+        foreach ($comptes as $compte) {
+            $numDeLicence[] = $compte->getNumlicence();
+        }
+        return $numDeLicence;
+    }
+
+    // ---------------------------------------------------------------------------------------------------
+
+    /**
+     * Renvoie le numéro du licencié grâce à son mail entré en paramètre
+     */
+    public function getNumeroDeLicence(int $mailLicencie): ?string {
+
+        $compteRepository = $this->entityManager->getRepository(Compte::class);
+        $compte = $compteRepository->findByEmail($mailLicencie);
+
+        return $compte->getNumlicence();
+    }
+
+    // ---------------------------------------------------------------------------------------------------
+
+    /**
+     * Renvoie l'email du licencié grâce à son numéro entré en paramètre
+     */
+    public function getMailDeLicence(int $numLicencie): ?string {
+
+        $compteRepository = $this->entityManager->getRepository(Compte::class);
+        $compte = $compteRepository->findByLicenceNumber($numLicencie);
+
+        return $compte->getEmail();
+    }
+
+    // ---------------------------------------------------------------------------------------------------
+
+    /**
+     * Modifie le mot de passe d'un compte avec son numéro de licence
+     */
+    public function updatePasswordByLicenceNumber(string $licenceNumber, string $newPassword) {
+
+        $compteRepository = $this->entityManager->getRepository(Compte::class);
+        $compte = $compteRepository->findOneBy(['numlicence' => $licenceNumber]);
+
+        $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+        $compte->setPassword($hashedPassword);
+
+        $this->entityManager->flush();
+    }
 }
