@@ -23,7 +23,7 @@ class Theme
     private ?string $libelle = null;
     
     /**
-     * Les ateliers de Theme
+     * L'atelier de Theme
      */
     #[ORM\ManyToMany(mappedBy: 'themes', targetEntity: Atelier::class)]
     private $ateliers;
@@ -58,6 +58,17 @@ class Theme
     {
         $this->libelle = $libelle;
 
+        return $this;
+    }
+
+    /**
+     * ajoute le theme a l'atelier
+     */
+    public function addAtelier(Atelier $atelier): self {
+        if (!$this->ateliers->contains($atelier)) {
+            $this->ateliers[] = $atelier;
+            $atelier->addTheme($this);
+        }
         return $this;
     }
 }

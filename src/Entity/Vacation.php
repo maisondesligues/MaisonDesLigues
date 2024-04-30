@@ -78,4 +78,13 @@ class Vacation
 
         return $this;
     }
+
+    /**
+     * Assigne l'Atelier à cette Vacation.
+     */
+    public function addAtelier(Atelier $atelier): self {
+        $this->ateliers = $atelier;
+        $atelier->addVacation($this);
+        return $this;
+    }
 }

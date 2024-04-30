@@ -1,0 +1,170 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+
+    <div class="modal fade" id="AtelierYEAH" tabindex="-1" role="dialog" aria-labelledby="licenceModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="licenceModalLabel">Erreur</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Données enregistrées avec succès
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="AtelierNone" tabindex="-1" role="dialog" aria-labelledby="licenceModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="licenceModalLabel">Erreur</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Aucun atelier présent en BDD
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="AtelierDate" tabindex="-1" role="dialog" aria-labelledby="licenceModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="licenceModalLabel">Erreur</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Les dates ne correspondent pas
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="AtelierError" tabindex="-1" role="dialog" aria-labelledby="licenceModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="licenceModalLabel">Erreur</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Les champs doivent être remplis
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if app.flashes('danger') %}
+        <script>
+            $(document).ready(function(){
+                $('#AtelierNone').modal('show');
+            });
+        </script>
+    {% endif %}
+
+    {% if app.flashes('succes') %}
+        <script>
+            $(document).ready(function(){
+                $('#AtelierYEAH').modal('show');
+            });
+        </script>
+    {% endif %}
+
+
+    {% if app.flashes('errordate') %}
+        <script>
+            $(document).ready(function(){
+                $('#AtelierDate').modal('show');
+            });
+        </script>
+    {% endif %}
+
+    {% if app.flashes('error') %}
+        <script>
+            $(document).ready(function(){
+                $('#AtelierDate').modal('show');
+            });
+        </script>
+    {% endif %}
+
+    <!-- Formulaire -->
+    {{ form_start(form) }}
+
+        <div>
+            {{ form_widget(form.type) }}
+        </div>
+
+        <!-- Atelier -->
+        <div id="atelier-fields" style="display:none;">
+            {{ form_row(form.atelier.libelle) }}
+            {{ form_row(form.atelier.nombrePlaces) }}
+        </div>
+
+        <!-- Theme -->
+        <div id="theme-fields" style="display:none;">
+            {{ form_row(form.theme.atelier) }}
+            {{ form_row(form.theme.libelle) }}
+        </div>
+
+        <!-- Vacation -->
+        <div id="vacation-fields" style="display:none;">
+            {{ form_row(form.vacation.atelier) }}
+            {{ form_row(form.vacation.dateDebut) }}
+            {{ form_row(form.vacation.dateFin) }}
+        </div>
+
+        <div>
+            {{ form_widget(form.save) }}
+        </div>
+
+    {{ form_end(form) }}
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Afficher les champs en fonction des boutons radios cliqués
+            function updateFields() {
+                var selectedType = document.querySelector('input[name="form[type]"]:checked').value;
+                document.getElementById('atelier-fields').style.display = (selectedType === 'atelier') ? 'block' : 'none';
+                document.getElementById('theme-fields').style.display = (selectedType === 'theme') ? 'block' : 'none';
+                document.getElementById('vacation-fields').style.display = (selectedType === 'vacation') ? 'block' : 'none';
+            }
+
+            // Ajout d'un écouteur d'événements pour chaque bouton radio
+            Array.from(document.querySelectorAll('input[name="form[type]"]')).forEach(function(radio) {
+                radio.addEventListener('change', updateFields);
+            });
+
+            // Initialisation au chargement de la page
+            updateFields();
+
+        });
+
+    </script>
+
+{% endblock %}
