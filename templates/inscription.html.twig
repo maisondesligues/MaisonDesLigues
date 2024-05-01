@@ -16,7 +16,7 @@
                     Les mots de passe ne correspondent pas
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-secondary text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" data-dismiss="modal">Fermer</button>
                 </div>
             </div>
         </div>
@@ -35,7 +35,7 @@
                     Une majuscule et 12 caractère minimum sont requis (MOT DE PASSE)
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-secondary text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" data-dismiss="modal">Fermer</button>
                 </div>
             </div>
         </div>
@@ -54,7 +54,7 @@
                     Le token est invalide ou a expiré
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-secondary text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" data-dismiss="modal">Fermer</button>
                 </div>
             </div>
         </div>
@@ -84,32 +84,53 @@
         </script>
     {% endif %}
 
-    <!-- Formulaire -->
-    <div class="text-center">
-        <h1>Formulaire d'inscription de licencié</h1>
-        
-        {{ form_start(form) }}
+   <!-- Formulaire -->
+<div class="mt-14 sm:mx-auto sm:w-full sm:max-w-sm">
+    <h2 class="mt-6 text-center text-2xl font-bold leading-10 tracking-tight text-gray-900">Formulaire d'inscription de licencié</h2>
+    {{ form_start(form, { 'attr': {'class': 'space-y-8'} }) }}
+    <div></div>
+
+    <div>
+        <label for="licence_number" class="block text-sm font-medium leading-6 text-gray-900">Numéro de licencié</label>
+        <div class="mt-2">
             {{ form_row(form.licence_number, {
-                'attr': {'class': 'text-field', 'placeholder': 'Numéro de licencié'}
+                'attr': {'class': 'block w-full rounded-md border border-gray-900 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6'}
             }) }}
-
-            {{ form_row(form.new_pass, {
-                'attr': {'class': 'text-field', 'placeholder': 'Mot de passe'}
-            }) }}
-
-            {{ form_row(form.confirm_pass, {
-                'attr': {'class': 'text-field', 'placeholder': 'Mot de passe'}
-            }) }}
-                        
-            {{ form_row(form.cancel_demand, {
-                'attr': {'class': 'btn btn-primary'}
-            }) }}
-
-            {{ form_row(form.continue, {
-                'attr': {'class': 'btn btn-primary'}
-            }) }}
-        {{ form_end(form) }}
+        </div>
     </div>
+
+    <div>
+        <label for="new_pass" class="block text-sm font-medium leading-6 text-gray-900">Mot de passe</label>
+        <div class="mt-2">
+            {{ form_row(form.new_pass, {
+                'attr': {'class': 'block w-full rounded-md border border-gray-900 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6'}
+            }) }}
+        </div>
+    </div>
+
+    <div>
+        <label for="confirm_pass" class="block text-sm font-medium leading-6 text-gray-900">Confirmation du mot de passe</label>
+        <div class="mt-2">
+            {{ form_row(form.confirm_pass, {
+                'attr': {'class': 'block w-full rounded-md border border-gray-900 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6'}
+            }) }}
+        </div>
+    </div>
+
+    <div class="mt-4 flex justify-center">
+        {{ form_row(form.cancel_demand, {
+            'attr': {'class': 'btn btn-primary text-white bg-black hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-black font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-black dark:hover:bg-black dark:focus:ring-black'}
+        }) }}
+    </div>
+
+    <div class="mt-4 flex justify-center">
+        {{ form_row(form.continue, {
+            'attr': {'class': 'btn btn-primary text-white bg-black hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-black font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-black dark:hover:bg-black dark:focus:ring-black'}
+        }) }}
+    </div>
+    {{ form_end(form) }}
+</div>
+
 
     <!-- Permet d'executer le submit avec le bouton entrer -->
     <script>
