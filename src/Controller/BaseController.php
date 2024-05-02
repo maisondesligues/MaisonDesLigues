@@ -10,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 use App\Repository\VacationRepository;
 use App\Repository\AtelierRepository;
@@ -51,9 +52,18 @@ class BaseController extends AbstractController {
     /**
      * Renvoie vers la page d'accueil de connexion de mdl
      */
-    #[Route('', name: 'app_base')]
-    public function index(){
+    #[Route('login', name: 'app_login')]
+    public function index(AuthenticationUtils $authenticationUtils): Response{
         return $this->render('accueil/index.html.twig');
+    }
+
+    /**
+     * @Route("/logout", name="app_logout")
+     */
+    public function logout()
+    {
+        // Le code ici ne sera jamais exécuté, Symfony gérera la déconnexion automatiquement
+        throw new \Exception('Don\'t forget to activate logout in security.yaml');
     }
 
     // ---------------------------------------------------------------------------------------------------

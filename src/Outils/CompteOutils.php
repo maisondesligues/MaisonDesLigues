@@ -91,7 +91,7 @@ class CompteOutils {
     /**
      * Renvoie le numéro du licencié grâce à son mail entré en paramètre
      */
-    public function getNumeroDeLicence(int $mailLicencie): ?string {
+    public function getNumeroDeLicence(string $mailLicencie): ?string {
 
         $compteRepository = $this->entityManager->getRepository(Compte::class);
         $compte = $compteRepository->findByEmail($mailLicencie);
@@ -117,7 +117,7 @@ class CompteOutils {
     /**
      * Modifie le mot de passe d'un compte avec son numéro de licence
      */
-    public function updatePasswordByLicenceNumber(string $licenceNumber, string $newPassword) {
+    public function updatePasswordByLicenceNumber(int $licenceNumber, string $newPassword) {
 
         $compteRepository = $this->entityManager->getRepository(Compte::class);
         $compte = $compteRepository->findOneBy(['numlicence' => $licenceNumber]);

@@ -6,10 +6,11 @@ use App\Repository\CompteRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CompteRepository::class)]
-class Compte
+class Compte implements UserInterface
 {
     /**
      * Id Compte
@@ -183,5 +184,20 @@ class Compte
         $this->tokenExpiresAt = $tokenExpiresAt;
 
         return $this;
+    }
+
+    public function getSalt()
+    {
+        // Pas nécessaire si tu utilises bcrypt ou sodium
+        return null;
+    }
+
+    public function getUsername()
+    {
+        return $this->email;
+    }
+
+    public function eraseCredentials()
+    {
     }
 }
