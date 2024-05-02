@@ -51,9 +51,9 @@ class BaseController extends AbstractController {
     /**
      * Renvoie vers la page d'accueil de connexion de mdl
      */
-    #[Route('', name: 'app_base')]
+    #[Route('/connexion', name: 'app_base')]
     public function index(){
-        return $this->render('accueil/index.html.twig');
+        return $this->render('accueil/connexion.html.twig');
     }
 
     // ---------------------------------------------------------------------------------------------------
@@ -61,7 +61,7 @@ class BaseController extends AbstractController {
     /**
      * Renvoie vers la page d'accueil de MDL
      */
-    #[Route('/accueil', name: 'accueil')]
+    #[Route('', name: 'app_accueil')]
     public function accueil(AtelierRepository $atelierRepository, HotelRepository $hotelRepository, 
         CategorieChambreRepository $categorieChambreRepository, VacationRepository $vacationRepository, 
         AppParameters $appParameters): Response {
@@ -345,7 +345,15 @@ class BaseController extends AbstractController {
             ->add('licence_number', TextType::class, ['label' => false, 'required' => false,])
             ->add('adresse_mail', TextType::class, ['label' => false, 'required' => false,])
 
-            ->add('continue', SubmitType::class, ['label' => 'Enregistrer ma demande'])
+            ->add('continue', SubmitType::class, [
+                'label' => 'Enregistrer ma demande',
+                'attr' => [
+                    'class' => 'text-white bg-yellow-500 hover:bg-red-500 focus:ring-4 focus:outline-none focus:ring-black font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-yellow-500 dark:hover:bg-yellow-500 dark:focus:ring-black'
+                ]
+            ])
+            
+            
+            
             ->getForm();
             
         $form->handleRequest($request);
@@ -530,7 +538,7 @@ class BaseController extends AbstractController {
             
         }
 
-        // Crée le formulaire et affiche la page de réniatioalisation de mot de passe
+        // Crée le formulaire et affiche la page de réniatialisation de mot de passe
         return $this->render('securite/renitialiser_motdepasse.html.twig', [
             'form' => $form->createView(),
         ]);

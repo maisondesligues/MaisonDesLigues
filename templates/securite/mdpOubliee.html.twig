@@ -15,7 +15,7 @@
                     Aucun utilisateur trouvé avec ces informations
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-secondary  text-white bg-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-yelllow-600 dark:hover:bg-yellow-500 dark:focus:ring-yellow-500" data-dismiss="modal">Fermer</button>
                 </div>
             </div>
         </div>
@@ -34,7 +34,7 @@
                     Vous devez fournir votre numéro de licence ou votre adresse email
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-secondary  text-white bg-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-yelllow-600 dark:hover:bg-yellow-500 dark:focus:ring-yellow-500" data-dismiss="modal">Fermer</button>
                 </div>
             </div>
         </div>
@@ -57,21 +57,29 @@
     {% endif %}
 
     <!-- Formulaire -->
-    <div class="text-center">
+    <div class="mt-14 sm:mx-auto sm:w-full sm:max-w-sm">
 
-        <h1>Formulaire de demande de récupération de mot de passe</h1>
+        <h1 class="mt-6 text-center text-2xl font-bold leading-10 tracking-tight text-gray-900">Formulaire de demande de récupération de mot de passe</h1>
         {{ form_start(form) }}
 
+        <div class="mt-2">
             {{ form_row(form.licence_number, {
-                'attr': {'class': 'text-field', 'placeholder': 'Numéro de licencié'}
-            }) }}
+    'attr': {'class': 'block w-full rounded-md border border-gray-300 py-2 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-5',
+        'placeholder': 'Numéro de licencié' }
+}) }}
+</div>
 
+            <div class="mt-2">
             {{ form_row(form.adresse_mail, {
-                'attr': {'class': 'text-field', 'placeholder': 'Adresse Mail'}
+                'attr': {'class': 'block w-full rounded-md border border-gray-300 py-2 text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-5', 
+                'placeholder': 'Adresse Mail'}
             }) }}
+</div>
 
-        {{ form_end(form) }}
-
+    <div class="mt-4 flex justify-center">
+        {{ form_end(form)}}
+    </div>
+        
     </div>
 
 {% endblock %}
