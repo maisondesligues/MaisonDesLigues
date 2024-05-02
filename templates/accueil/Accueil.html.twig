@@ -116,6 +116,7 @@
             <h2 class="text-sm text-center">Le congrès se déroulera du 20 au 23 Octobre 2024.</h2>
         </div>
 
+<div class=" border border-solid border-black">
         <!-- Bloc pour les ateliers proposés -->
        <div class="p-6 bg-white">
     <h2 class="text-xl text-center font-bold mb-4">Ateliers Proposés</h2>
@@ -151,6 +152,7 @@
     <button id="showMoreButton" class="block mx-auto mt-4 bg-black text-white px-4 py-2 rounded hover:bg-yellow-500">Afficher plus</button>
 </div>
 
+
 <script>
     const showMoreButton = document.getElementById('showMoreButton');
     const ateliersContainer = document.getElementById('ateliersContainer');
@@ -171,7 +173,6 @@
         }
     });
 </script>
-
 
 
 
@@ -245,5 +246,6 @@
             {% endfor %}
              </div>
         </section>
+    </div>
     </div>
 {% endblock %}

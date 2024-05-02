@@ -15,7 +15,7 @@
                     Données enregistrées avec succès
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary btn btn-secondary text-white bg-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-yelllow-600 dark:hover:bg-yellow-500 dark:focus:ring-yellow-500" data-dismiss="modal"" data-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-secondary btn btn-secondary text-white bg-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-yelllow-600 dark:hover:bg-yellow-500 dark:focus:ring-yellow-500" data-dismiss="modal" data-dismiss="modal">Fermer</button>
                 </div>
             </div>
         </div>
@@ -111,43 +111,43 @@
         </script>
     {% endif %}
 
-   <!-- Formulaire -->
-    <div class="mt-14 sm:mx-auto sm:w-full sm:max-w-sm">
+ <!-- Formulaire -->
+<div class="mt-14 sm:mx-auto sm:w-full sm:max-w-sm">
     {{ form_start(form) }}
     <div class="mt-4 flex justify-around">
-        {{ form_widget(form.type, {'attr': {'class' : 'space-x-4' }})}}
+        {{ form_widget(form.type, {'attr': {'class' : 'space-x-4'}}) }}
     </div>
 
     <!-- Atelier -->
     <div id="atelier-fields" style="display:none;">
         {{ form_row(form.atelier.libelle, {
-            'attr': {'class': 'block w-full rounded-md border border-gray-900 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6'}
+            'attr': {'class': 'block w-full mb-4 rounded-md border border-gray-900 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6'}
         }) }}
         {{ form_row(form.atelier.nombrePlaces, {
-            'attr': {'class': 'block w-full rounded-md border border-gray-900 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6'}
+            'attr': {'class': 'block w-full mb-4 rounded-md border border-gray-900 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6'}
         }) }}
     </div>
 
     <!-- Theme -->
-    <div id="theme-fields" style="display:none; ">
+    <div id="theme-fields" style="display:none;">
         {{ form_row(form.theme.atelier, {
-            'attr': {'class': ' h-8 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-200 dark:border-gray-600  dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'}
+            'attr': {'class': 'block w-full h-8 mb-4 text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6'}
         }) }}
         {{ form_row(form.theme.libelle, {
-            'attr': {'class': 'block w-full rounded-md border border-gray-900 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6'}
+            'attr': {'class': 'block w-full mb-4 rounded-md border border-gray-900 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6'}
         }) }}
     </div>
 
     <!-- Vacation -->
     <div id="vacation-fields" style="display:none;">
         {{ form_row(form.vacation.atelier, {
-            'attr': {'class': 'block w-full h-8  text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6'}
+            'attr': {'class': 'block w-full h-8 mb-4 text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6'}
         }) }}
         {{ form_row(form.vacation.dateDebut, {
-            'attr': {'class': 'block w-full h-8 text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6'}
+            'attr': {'class': 'block w-full h-8 mb-4 text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6'}
         }) }}
         {{ form_row(form.vacation.dateFin, {
-            'attr': {'class': 'block w-full h-8 text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6'}
+            'attr': {'class': 'block w-full h-8 mb-4 text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6'}
         }) }}
     </div>
 
@@ -156,10 +156,6 @@
             'attr': {'class': 'btn btn-primary text-white bg-black hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-black font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-black dark:hover:bg-black dark:focus:ring-black'}
         }) }}
     </div>
-
-    {{ form_end(form) }}
-</div>
-
 
     {{ form_end(form) }}
 </div>
