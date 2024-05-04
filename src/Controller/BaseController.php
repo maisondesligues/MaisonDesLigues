@@ -70,7 +70,7 @@ class BaseController extends AbstractController
     #[Route('login', name: 'app_login')]
     public function index(AuthenticationUtils $authenticationUtils): Response
     {
-        return $this->render('accueil/index.html.twig');
+        return $this->render('accueil/connexion.html.twig');
     }
 
     /**
