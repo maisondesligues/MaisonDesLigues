@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="mt-4">Modifier les vacations</h1>
+        {{ form_start(form) }}
+            <div class="form-group">
+                {{ form_label(form.atelier) }}
+                {{ form_widget(form.atelier, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <button type="submit" class="btn btn-primary">Confirmer</button>
+        {{ form_end(form) }}
+
+        {% if vacationForms is not empty %}
+            <h2 class="mt-4">Vacations</h2>
+            {% for vacationForm in vacationForms %}
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h3 class="card-title">Vacation</h3>
+                        {{ form_start(vacationForm) }}
+                            <div class="form-group">
+                                {{ form_label(vacationForm.dateHeureDebut) }}
+                                {{ form_widget(vacationForm.dateHeureDebut, {'attr': {'class': 'form-control datetime-picker', 'type': 'datetime-local'}}) }}
+                            </div>
+                            <div class="form-group">
+                                {{ form_label(vacationForm.dateHeureFin) }}
+                                {{ form_widget(vacationForm.dateHeureFin, {'attr': {'class': 'form-control datetime-picker', 'type': 'datetime-local'}}) }}
+                            </div>
+                            <button type="submit" class="btn btn-primary">Valider</button>
+                        {{ form_end(vacationForm) }}
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            flatpickr(".datetime-picker", {
+                enableTime: true,
+                dateFormat: "Y-m-d\\TH:i:S", // Ensure seconds are included if your format expects it
+                time_24hr: true
+            });
+        });
+    </script>
+{% endblock %}

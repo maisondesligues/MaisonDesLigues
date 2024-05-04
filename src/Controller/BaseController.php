@@ -8,9 +8,16 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\Security\Core\Security;
 
+
+use App\Repository\ProposerRepository;
 use App\Repository\VacationRepository;
 use App\Repository\AtelierRepository;
 use App\Repository\HotelRepository;
@@ -25,46 +32,69 @@ use App\Outils\Security\TokenManagement;
 
 // ---------------------------------------------------------------------------------------------------
 
-class BaseController extends AbstractController {
+class BaseController extends AbstractController
+{
 
     private $mailerService;
     private $compteOutils;
     private $licencieOutils;
     private $passwordManagement;
     private $tokenManagement;
+    private $security;
 
     /**
      * Constructeur du controlleur
      */
-    public function __construct(MailerService $mailerService, CompteOutils $compteOutils, LicencieOutils $licencieOutils, 
-        PasswordManagement $passwordManagement, TokenManagement $tokenManagement) {
+    public function __construct(
+        MailerService $mailerService,
+        CompteOutils $compteOutils,
+        LicencieOutils $licencieOutils,
+        PasswordManagement $passwordManagement,
+        TokenManagement $tokenManagement,
+        Security $security
+    ) {
 
         $this->mailerService = $mailerService;
         $this->compteOutils = $compteOutils;
         $this->licencieOutils = $licencieOutils;
         $this->passwordManagement = $passwordManagement;
         $this->tokenManagement = $tokenManagement;
-    }
-    
-    // ---------------------------------------------------------------------------------------------------
-    
-    /**
-     * Renvoie vers la page d'accueil de connexion de mdl
-     */
-    #[Route('/connexion', name: 'app_base')]
-    public function index(){
-        return $this->render('accueil/connexion.html.twig');
+        $this->security = $security;
     }
 
     // ---------------------------------------------------------------------------------------------------
-    
+
+    /**
+     * Renvoie vers la page d'accueil de connexion de mdl
+     */
+    #[Route('login', name: 'app_login')]
+    public function index(AuthenticationUtils $authenticationUtils): Response
+    {
+        return $this->render('accueil/index.html.twig');
+    }
+
+    /**
+     * @Route("/logout", name="app_logout")
+     */
+    public function logout()
+    {
+        // Le code ici ne sera jamais exécuté, Symfony gérera la déconnexion automatiquement
+        throw new \Exception('Don\'t forget to activate logout in security.yaml');
+    }
+
+    // ---------------------------------------------------------------------------------------------------
+
     /**
      * Renvoie vers la page d'accueil de MDL
      */
-    #[Route('', name: 'app_accueil')]
-    public function accueil(AtelierRepository $atelierRepository, HotelRepository $hotelRepository, 
-        CategorieChambreRepository $categorieChambreRepository, VacationRepository $vacationRepository, 
-        AppParameters $appParameters): Response {
+    #[Route('/accueil', name: 'accueil')]
+    public function accueil(
+        AtelierRepository $atelierRepository,
+        HotelRepository $hotelRepository,
+        CategorieChambreRepository $categorieChambreRepository,
+        VacationRepository $vacationRepository,
+        AppParameters $appParameters
+    ): Response {
 
         $ateliers = $atelierRepository->findAll();
         $hotels = $hotelRepository->findAll();
@@ -76,14 +106,14 @@ class BaseController extends AbstractController {
         $ibisDouble = $appParameters->getIbisHotelDoublePrix();
 
         return $this->render('accueil/accueil.html.twig', [
-                    'ateliers' => $ateliers,
-                    'hotels' => $hotels,
-                    'vacations'=> $vacation,
-                    'categoriesChambres' => $categoriesChambres,
-                    'budgetSingle' => $budgetSingle,
-                    'budgetDouble' => $budgetDouble,
-                    'ibisSingle' => $ibisSingle,
-                    'ibisDouble' => $ibisDouble,
+            'ateliers' => $ateliers,
+            'hotels' => $hotels,
+            'vacations' => $vacation,
+            'categoriesChambres' => $categoriesChambres,
+            'budgetSingle' => $budgetSingle,
+            'budgetDouble' => $budgetDouble,
+            'ibisSingle' => $ibisSingle,
+            'ibisDouble' => $ibisDouble,
         ]);
     }
 
@@ -93,8 +123,9 @@ class BaseController extends AbstractController {
      * Renvoie vers la page d'inscription d'un licencié
      */
     #[Route('/inscription', name: 'app_inscription')]
-    public function inscription(Request $request): Response {
-        
+    public function inscription(Request $request): Response
+    {
+
         // Récupère les numéros de licenciés de la table "Licencie"
         $licencies = $this->licencieOutils->getNumerosDeLicence();
 
@@ -107,12 +138,12 @@ class BaseController extends AbstractController {
 
             ->add('cancel_demand', SubmitType::class, ['label' => 'Annuler une demande', 'attr' => ['formnovalidate' => 'formnovalidate']])
             ->add('continue', SubmitType::class, ['label' => 'Enregistrer ma demande'])
-            
+
             ->getForm();
-            
+
         $form->handleRequest($request);
 
-    // Si le formulaire est envoyé ----------------------------------------------------------------------------
+        // Si le formulaire est envoyé ----------------------------------------------------------------------------
         if ($form->isSubmitted()) {
 
             // On récupère les données du formulaire et on en prépare d'autres
@@ -121,14 +152,14 @@ class BaseController extends AbstractController {
             $password = $formData['confirm_pass'];
             $mail = "";
 
-        // Si le bouton "Annuler" est cliqué ----------------------------------------------------------------------------
+            // Si le bouton "Annuler" est cliqué ----------------------------------------------------------------------------
             if ($form->get('cancel_demand')->isClicked()) {
 
                 // Renvoie vers la page d'annulation de demande
                 return $this->redirectToRoute('app_cancelDemand');
             }
 
-        // Si le bouton "Confirmer" du formulaire est cliqué ----------------------------------------------------------------------------
+            // Si le bouton "Confirmer" du formulaire est cliqué ----------------------------------------------------------------------------
             if ($form->get('continue')->isClicked()) {
 
                 // Si le mot de passe fait moins de 12 caractères et ne contient pas au moins une majuscule
@@ -139,7 +170,7 @@ class BaseController extends AbstractController {
                     return $this->redirectToRoute('app_inscription');
                 }
 
-            // On vérifie la licence ----------------------------------------------------------------------------
+                // On vérifie la licence ----------------------------------------------------------------------------
                 $licenceFound = false;
 
                 // Pour chaque numéro de licence dans la table licencie ----------------------------------------------------------------------------
@@ -148,7 +179,7 @@ class BaseController extends AbstractController {
                     // Renvoie le numéro de licence vérifié en log
                     error_log("Vérification du numéro de licence: " . $licencie);
 
-                // Si les numéro de licences correspondent ----------------------------------------------------------------------------
+                    // Si les numéro de licences correspondent ----------------------------------------------------------------------------
                     if ($licencie == $licenceNumberInput) {
 
                         // La licence est trouvée, on récupère le mail du licencié
@@ -160,20 +191,20 @@ class BaseController extends AbstractController {
                     }
                 }
 
-            // Si la licence n'est pas trouvée ----------------------------------------------------------------------------
+                // Si la licence n'est pas trouvée ----------------------------------------------------------------------------
                 if (!$licenceFound) {
 
                     // Renvoie vers l'accueil avec affichage d'un modal
                     $this->addFlash(
                         'danger',
                         'Le numéro de licence saisi ne correspond pas.'
-                    );    
-                    
+                    );
+
                     // Renvoie vers la page d'accueil
                     return $this->redirectToRoute('accueil');
                 }
 
-            // Si les mot de passes correspondent ----------------------------------------------------------------------------
+                // Si les mot de passes correspondent ----------------------------------------------------------------------------
                 if ($formData['new_pass'] === $formData['confirm_pass']) {
 
                     // Génère un token de 32 caractères en créer un lien de confirmation
@@ -193,7 +224,7 @@ class BaseController extends AbstractController {
 
                 }
 
-            // Si les mot de passes ne correspondent pas ----------------------------------------------------------------------------
+                // Si les mot de passes ne correspondent pas ----------------------------------------------------------------------------
                 else {
 
                     // Affichage d'un modal et rechargement du formulaire
@@ -210,13 +241,180 @@ class BaseController extends AbstractController {
         ]);
     }
 
-// ---------------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------
+
+    /**
+     * Inscris un licencié aux congrès
+     */
+    #[Route('/inscription-congres', name: 'app_inscription_congres')]
+    public function inscriptionCongres(Request $request, AtelierRepository $atelierRepository, HotelRepository $hotelRepository, ProposerRepository $proposerRepository, CategorieChambreRepository $categorieChambreRepository): Response
+    {
+
+        // Vérifie que l'utilisateur à le rôle d'inscrit
+        $user = $this->security->getUser();
+        if (!$user || $user->getRoles() !== ['INSCRIT']) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $ateliers = $atelierRepository->findAll();
+        $hotels = $hotelRepository->findAll();
+        $categorieChambres = $categorieChambreRepository->findAll();
+
+        // Liste les ateliers présents en bdd
+        $atelierChoices = [];
+        foreach ($ateliers as $atelier) {
+            $atelierChoices[$atelier->getLibelle()] = $atelier->getId();
+        }
+
+        // Liste les hotels présents en bdd
+        $hotelChoices = [];
+        foreach ($hotels as $hotel) {
+            $hotelChoices[$hotel->getPnom()] = $hotel->getId();
+        }
+
+        // Récupère les catégories liées aux chambres
+        $categorieChoices = [];
+        foreach ($categorieChambres as $categorie) {
+            $categorieChoices[$categorie->getLibelleCategorie()] = $categorie->getId();
+        }
+
+        // Création du formulaire
+        $form = $this->createFormBuilder()
+
+            ->add('email', EmailType::class, ['label' => 'Modifier votre adresse email', 'required' => false])
+            ->add('ateliers', ChoiceType::class, [
+                'choices' => $atelierChoices,
+                'expanded' => true,
+                'multiple' => true,
+                'label' => 'Choisir les ateliers'
+            ])
+            ->add('dateNuiteeD', DateType::class, ['widget' => 'single_text', 'label' => 'Choisir la date de début de nuitée'])
+            ->add('dateNuiteeF', DateType::class, ['widget' => 'single_text', 'label' => 'Choisir la date de fin de nuitée'])
+            ->add('hotel', ChoiceType::class, ['choices' => $hotelChoices, 'label' => 'Choisir votre hôtel'])
+            ->add('categorie', ChoiceType::class, ['choices' => $categorieChoices, 'label' => 'Choisir la catégorie de chambre'])
+            ->add('submit', SubmitType::class, ['label' => 'Enregistrer l\'inscription'])
+            ->getForm();
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Enregistrer les données ici
+            $data = $form->getData();
+            $email = $data['email'];
+            $ateliers = $data['ateliers'];
+            $datenuiteed = $data['dateNuiteeD'];
+            $datenuiteef = $data['dateNuiteeF'];
+            $categorieId = $data['categorie'];
+            $hotelId = $data['hotel'];
+
+            // Récupère l'hotel
+            $hotel = $hotelRepository->find($hotelId);
+
+            // Récuper la catégorie
+            $categorie = $categorieChambreRepository->find($categorieId);
+
+            // R2cupère la liste des ateliers
+            $ateliersChoisis = [];
+            foreach ($ateliers as $atelierId) {
+                $atelier = $atelierRepository->find($atelierId);
+                if ($atelier) {
+                    $ateliersChoisis[] = $atelier->getLibelle();
+                }
+            }
+
+            // Calcul du nombre de nuits
+            $interval = $datenuiteed->diff($datenuiteef);
+            $nights = $interval->days;
+
+        // Si la diff des nuits est incorrecte
+            if ($nights < 1) {
+
+                // Affichage d'un modal
+                $this->addFlash('errornights', "Veuillez vérifier les dates. La date de fin doit être après la date de début.");
+                return $this->redirectToRoute('app_inscription_congres');
+            }
+
+            // Récupérer le tarif pour l'hôtel choisi
+            $tarif = $proposerRepository->findOneBy(['hotels' => $hotelId, 'categorieChambre' => $categorieId]);
+
+        // Si tarif n'existe pas
+            if (!$tarif) {
+
+                // Affiche un modal si aucune offre n'existe pour cet hotel
+                $this->addFlash('errorTarif', "Le tarif pour l'hôtel sélectionné n'est pas disponible.");
+                return $this->redirectToRoute('app_inscription_congres');
+            }
+
+            // Renvoie le coût total des nuitées
+            $totalAmount = $nights * $tarif->getTarifNuite();
+
+            // Construction de la liste des ateliers
+            $listeAteliers = implode(", ", $ateliersChoisis);
+
+            // génère un token aléatoire
+            $token = bin2hex(random_bytes(16));
+
+            // Récupère le numéro du licencié
+            $numerolicencie = $user->getNumlicence();
+
+            // Génère un lien renvoyant le token et le numéro du licencié
+            $link = $this->generateUrl('confirmation', ['token' => $token, 'numLicencie' => $numerolicencie], UrlGeneratorInterface::ABSOLUTE_URL);
+
+            // Construction du message de l'email
+            $messageEmail = "Merci pour votre inscription. Voici le résumé de votre inscription au congrès :\n";
+            $messageEmail .= "Email : " . $user->getEmail() . "\n";
+            $messageEmail .= "Hotel : " . $hotel->getPnom() . "\n";
+            $messageEmail .= "Catégorie de chambre : " . $categorie->getLibelleCategorie() . "\n";
+            $messageEmail .= "Nombre de nuits : " . $nights . "\n";
+            $messageEmail .= "Ateliers choisis : " . $listeAteliers . "\n";
+            $messageEmail .= "Montant dû : $totalAmount €.";
+            $messageEmail .= "Lien de confirmation: $link ";
+
+            // Envoi de l'email de confirmation
+            $this->mailerService->sendEmail(
+                'no-reply@votrecongres.com',
+                $user->getEmail(),
+                'Confirmation d\'inscription au congrès',
+                $messageEmail
+            );
+
+            if (!empty($email) && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $user->setEmail($email);
+
+                // Enregistre le nouvel e-mail dans la base de données
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->persist($user);
+                $entityManager->flush();
+            }
+
+            // renvoie vers l'accueil avec affichage d'un modal
+            $this->addFlash('InscriCongres', 'Attente Validation Mail');
+            return $this->redirectToRoute('app_inscription_congres');
+        }
+
+        return $this->render('inscription_congres.html.twig', [
+            'form' => $form->createView(),
+            'user' => $user
+        ]);
+    }
+
+    /**
+     * renvoie vers la page d'accueil après vérification du lien
+     */
+    #[Route('/confirmation/{token}/{numLicencie}', name: 'confirmation')]
+    public function confirmation(Request $request, string $token, string $numLicencie): Response
+    {
+        $this->addFlash('successInscriCongres', 'Votre inscription a été confirmée avec succès.');
+        return $this->redirectToRoute('accueil');
+    }
+
+    // ---------------------------------------------------------------------------------------------------
 
     /**
      * Route vers la page de confirmation d'un licencié, utilisé avec un token
      */
     #[Route('/confirm', name: 'app_routeDeConfirmation')]
-    public function confirmAccount(Request $request): Response {
+    public function confirmAccount(Request $request): Response
+    {
 
         // Récupère le token entré dans l'URL
         $token = $request->query->get('token');
@@ -236,8 +434,8 @@ class BaseController extends AbstractController {
             // Renvoie vers la page d'accueil avec affichage d'un modal
             $this->addFlash('success', 'Votre compte a été confirmé.');
             return $this->redirectToRoute('accueil');
-        } 
-        
+        }
+
         // Le compte n'existe pas ou le token est expiré -----------------------------------------------------------------
         else {
 
@@ -247,13 +445,14 @@ class BaseController extends AbstractController {
         }
     }
 
-// ---------------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------
 
     /**
      * Renvoie vers la page d'annulation de la demande de création de compte
      */
     #[Route('/cancelDemand', name: 'app_cancelDemand')]
-    public function cancelDemand(Request $request): Response {
+    public function cancelDemand(Request $request): Response
+    {
 
         // Création du formulaire
         $form = $this->createFormBuilder()
@@ -262,10 +461,10 @@ class BaseController extends AbstractController {
 
             ->add('cancel_demand', SubmitType::class, ['label' => 'Annuler une demande'])
             ->getForm();
-            
+
         $form->handleRequest($request);
 
-    // Si le formulaire est envoyé ---------------------------------------------------------------------------------------------------
+        // Si le formulaire est envoyé ---------------------------------------------------------------------------------------------------
         if ($form->isSubmitted()) {
 
             // On récupère les données du formulaire
@@ -273,14 +472,14 @@ class BaseController extends AbstractController {
             $licenceNumberInput = $formData['licence_number'];
             $passwordInput = $formData['new_pass'];
 
-        // On vérifie si l'identifiant existe dans la base de données ---------------------------------------------------------------------------------------------------
+            // On vérifie si l'identifiant existe dans la base de données ---------------------------------------------------------------------------------------------------
             $licenceFound = false;
 
             foreach ($this->licencieOutils->getNumerosDeLicenceComptes() as $comp) {
 
                 // Si l'identifiant existe ---------------------------------------------------------------------------------------------------
                 if ($comp == $licenceNumberInput) {
-                    
+
                     $licenceFound = true;
 
                     // On sort de la boucle
@@ -288,13 +487,13 @@ class BaseController extends AbstractController {
                 }
             }
 
-        // Si l'identifiant a été trouvé ---------------------------------------------------------------------------------------------------
+            // Si l'identifiant a été trouvé ---------------------------------------------------------------------------------------------------
             if ($licenceFound) {
 
                 // On vérifie si le mot de passe enregisté est le même que dans la base de données
                 $mdpCheck = $this->passwordManagement->verifierMDP($licenceNumberInput, $passwordInput);
 
-            // Si le mot de passe est bon --------------------------------------------------------------------------------------------------
+                // Si le mot de passe est bon --------------------------------------------------------------------------------------------------
                 if ($mdpCheck) {
 
                     // On supprime le compte de la BDD et on renvoie vers l'accueil avec l'affichage d'un modal
@@ -302,8 +501,8 @@ class BaseController extends AbstractController {
                     $this->addFlash('successSuprr', 'mot de passe invalide');
                     return $this->redirectToRoute('accueil');
                 }
-                
-            // Si le mot de passe n'est pas bon ---------------------------------------------------------------------------------------------------
+
+                // Si le mot de passe n'est pas bon ---------------------------------------------------------------------------------------------------
                 else {
 
                     // On renvoie vers l'accueil en affichant un modal
@@ -312,8 +511,8 @@ class BaseController extends AbstractController {
                 }
 
             }
-            
-        // Si l'identifiant n'a pas été trouvé ---------------------------------------------------------------------------------------------------
+
+            // Si l'identifiant n'a pas été trouvé ---------------------------------------------------------------------------------------------------
             else {
 
                 // On renvoie vers l'accueil en affichant un modal
@@ -322,14 +521,14 @@ class BaseController extends AbstractController {
             }
 
         }
-        
+
         // Crée le formulaire et affiche la page d'annulation de demande de création du compte
         return $this->render('cancelDemand.html.twig', [
             'form' => $form->createView(),
         ]);
     }
 
-// ---------------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------
 
     /**
      * Renvoie vers la page mot de passe oublié
@@ -338,7 +537,8 @@ class BaseController extends AbstractController {
      * le mail lui renverra un lien unique pour modifier son mot de passe
      */
     #[Route('/mdpoublie', name: 'app_mdpoublie')]
-    public function mdpOublie(Request $request): Response {
+    public function mdpOublie(Request $request): Response
+    {
 
         // Création du formulaire
         $form = $this->createFormBuilder()
@@ -355,10 +555,10 @@ class BaseController extends AbstractController {
             
             
             ->getForm();
-            
+
         $form->handleRequest($request);
 
-    // Si le formulaire est envoyé ---------------------------------------------------------------------------------------------------
+        // Si le formulaire est envoyé ---------------------------------------------------------------------------------------------------
         if ($form->isSubmitted()) {
 
             // récupère les données du formulaire
@@ -366,21 +566,21 @@ class BaseController extends AbstractController {
             $licenceNumber = $formData['licence_number'];
             $adresseMail = $formData['adresse_mail'];
 
-        // Si aucune licence et adresse mail n'est rentrée ---------------------------------------------------------------------------------
+            // Si aucune licence et adresse mail n'est rentrée ---------------------------------------------------------------------------------
             if (!$licenceNumber && !$adresseMail) {
 
                 // Renvoie un modal et recharge la page
                 $this->addFlash('danger', 'Vous devez fournir votre numéro de licence ou votre adresse email.');
                 return $this->redirectToRoute('app_mdpoublie');
             }
-        
-        // Si l'un des deux ou les deux est rentré -----------------------------------------------------------------------------------------------
+
+            // Si l'un des deux ou les deux est rentré -----------------------------------------------------------------------------------------------
             else {
 
                 // génère un token aléatoire
                 $token = bin2hex(random_bytes(16));
 
-            // Si l'adresse mail est entrée ------------------------------------------------------------------------------------------
+                // Si l'adresse mail est entrée ------------------------------------------------------------------------------------------
                 if ($adresseMail) {
 
                     // On récupère la liste des mails présent en BDD dans la table Compte
@@ -389,7 +589,7 @@ class BaseController extends AbstractController {
                     // Pour chaque adresse mail dans la table Compte
                     foreach ($listMail as $mail) {
 
-                    // Si le mail de la table est le même que celui entrée ------------------------------------------------------------------------------------------
+                        // Si le mail de la table est le même que celui entrée ------------------------------------------------------------------------------------------
                         if ($mail == $adresseMail) {
 
                             // Récupère le numéro du licencié à partir du mail
@@ -408,24 +608,24 @@ class BaseController extends AbstractController {
                             return $this->redirectToRoute('app_demandeEnAttente');
                         }
 
-                    // Sinon, on sort de la boucle ------------------------------------------------------------------------------------------
+                        // Sinon, on sort de la boucle ------------------------------------------------------------------------------------------
                         else {
                             break;
                         }
                     }
                 }
 
-                
+
                 // Si le numéro de licencié est entré ------------------------------------------------------------------------------
                 if ($licenceNumber) {
-                    
+
                     // Récupère tout les numéros de licence de la table Compte
                     $listNumeroLicencies = $this->compteOutils->getNumerosDeLicenceComptes();
 
                     // Pour chaque numero de licencie dans la table Compte
                     foreach ($listNumeroLicencies as $numeroLicencies) {
 
-                    // Si le numéro de licence de la table est le même que celui entrée ------------------------------------------------------------------------------------------
+                        // Si le numéro de licence de la table est le même que celui entrée ------------------------------------------------------------------------------------------
                         if ($numeroLicencies == $licenceNumber) {
 
                             // Récupère le mail a partir du numéro de licencié
@@ -444,14 +644,14 @@ class BaseController extends AbstractController {
                             return $this->redirectToRoute('app_demandeEnAttente');
                         }
 
-                    // Sinon, on sort de la boucle ------------------------------------------------------------------------------------------
+                        // Sinon, on sort de la boucle ------------------------------------------------------------------------------------------
                         else {
                             break;
                         }
                     }
                 }
-                
-            // Si ni le mail ni le numéro de licencié n'est trouvé ------------------------------------------------------------------------------
+
+                // Si ni le mail ni le numéro de licencié n'est trouvé ------------------------------------------------------------------------------
                 else {
 
                     // Renvoie un modal
@@ -465,25 +665,27 @@ class BaseController extends AbstractController {
         ]);
     }
 
-// ---------------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------
 
     /**
      * Affiche la page des demandes prise en compte
      */
     #[Route('/demandeEnAttente', name: 'app_demandeEnAttente')]
-    public function priseencompte(): Response {
+    public function priseencompte(): Response
+    {
 
         return $this->render('demandeenattente.html.twig');
     }
 
-// ---------------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------
 
     /**
      * Renvoie vers la page de rénitialisation de mot de passes
      * Contient un token unique et un numéro de licencié en lien
      */
     #[Route('/renitialiserMotDePasse', name: 'renitialiser_motdepasse')]
-    public function resetPassword($token, Request $request): Response {
+    public function resetPassword($token, Request $request): Response
+    {
 
         // Récupère le token entré dans l'URL
         $token = $request->query->get('token');
@@ -501,18 +703,18 @@ class BaseController extends AbstractController {
 
             ->add('continue', SubmitType::class, ['label' => 'Continuer'])
             ->getForm();
-            
+
         $form->handleRequest($request);
 
-    // Si le formulaire est confirmé ---------------------------------------------------------------------------------------------------
+        // Si le formulaire est confirmé ---------------------------------------------------------------------------------------------------
         if ($form->isSubmitted()) {
 
             // On récupère les données du formulaire
             $formData = $form->getData();
             $newPass = $formData['new_pass'];
             $confirmPass = $formData['confirm_pass'];
-            
-        // Si les mots de passe correspondent ---------------------------------------------------------------------------------------------------
+
+            // Si les mots de passe correspondent ---------------------------------------------------------------------------------------------------
             if ($newPass === $confirmPass) {
 
                 // On enregistre le nouveau mdp dans la bdd
@@ -528,14 +730,14 @@ class BaseController extends AbstractController {
                 return $this->redirectToRoute('app_demandeEnAttente');
 
             }
-            
-        // Si les mots de passe ne correspondent pas -------------------------------------------------------------------------
+
+            // Si les mots de passe ne correspondent pas -------------------------------------------------------------------------
             else {
 
                 // Renvoie un modal d'erreur
                 $this->addFlash('error', 'Les mots de passe ne correspondent pas.');
             }
-            
+
         }
 
         // Crée le formulaire et affiche la page de réniatialisation de mot de passe

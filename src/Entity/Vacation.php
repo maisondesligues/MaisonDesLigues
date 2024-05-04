@@ -18,7 +18,8 @@ class Vacation
     private ?int $id = null;
 
     /**
-     * Les ateliers de Vacation
+     * @ORM\ManyToOne(targetEntity=Atelier::class)
+     * @ORM\JoinColumn(name="ateliers_id", referencedColumnName="id")
      */
     #[ORM\ManyToOne(inversedBy: 'vacations', targetEntity: Atelier::class)]
     private ?Atelier $ateliers = null;
@@ -67,6 +68,18 @@ class Vacation
     public function getDateHeureFin(): ?string
     {
         return $this->dateHeureFin;
+    }
+
+    // getter and setter for atelier
+    public function getAtelier(): ?Atelier
+    {
+        return $this->ateliers;
+    }
+
+    public function setAtelier(?Atelier $atelier): self
+    {
+        $this->ateliers = $atelier;
+        return $this;
     }
 
     /**

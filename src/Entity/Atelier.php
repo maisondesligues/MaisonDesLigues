@@ -70,6 +70,10 @@ class Atelier {
         return $this->libelle;
     }
 
+    public function getVacations() {
+        return $this->vacations;
+    }
+
     /**
      * définit le libellé de l'Atelier
      */

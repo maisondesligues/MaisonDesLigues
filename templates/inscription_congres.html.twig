@@ -1,0 +1,158 @@
+{# templates/inscription_congres.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription au Congrès{% endblock %}
+
+{% block content %}
+
+    <div class="modal fade" id="errornights" tabindex="-1" role="dialog" aria-labelledby="licenceModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="licenceModalLabel">Succes</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Veuillez vérifier les dates. La date de fin doit être après la date de début
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary " data-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="errorTarif" tabindex="-1" role="dialog" aria-labelledby="licenceModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="licenceModalLabel">Succes</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Le tarif pour l'hôtel sélectionné n'est pas disponible
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary " data-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="InscriCongres" tabindex="-1" role="dialog" aria-labelledby="licenceModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="licenceModalLabel">Succes</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Veuillez vérifier votre boîte mail
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary " data-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if app.flashes('InscriCongres') %}
+        <script>
+            $(document).ready(function(){
+                $('#InscriCongres').modal('show');
+            });
+        </script>
+    {% endif %}
+
+    {% if app.flashes('errornights') %}
+        <script>
+            $(document).ready(function(){
+                $('#errornights').modal('show');
+            });
+        </script>
+    {% endif %}
+
+    {% if app.flashes('errorTarif') %}
+        <script>
+            $(document).ready(function(){
+                $('#errorTarif').modal('show');
+            });
+        </script>
+    {% endif %}
+
+<div class="container">
+    <h1>Inscription au Congrès</h1>
+
+    <p>Informations du licencié:</p>
+    <ul>
+        <li>Email: {{ user.email }}</li>
+        <li>Numéro de licence: {{ user.numlicence }}</li>
+    </ul>
+
+    <p>Veuillez remplir les informations ci-dessous pour compléter votre inscription.</p>
+
+    {{ form_start(form) }}
+
+    <div class="form-group">
+        {{ form_label(form.email) }}
+        {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.email) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.ateliers) }}
+        <div>
+            {% for atelier in form.ateliers %}
+                <div class="form-check">
+                    {{ form_widget(atelier, {'attr': {'class': 'form-check-input'}}) }}
+                    {{ form_label(atelier, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                </div>
+            {% endfor %}
+        </div>
+        {{ form_errors(form.ateliers) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.dateNuiteeD) }}
+        {{ form_widget(form.dateNuiteeD, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.dateNuiteeD) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.dateNuiteeF) }}
+        {{ form_widget(form.dateNuiteeF, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.dateNuiteeF) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.hotel) }}
+        {{ form_widget(form.hotel, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.hotel) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.categorie) }}
+        {{ form_widget(form.categorie, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.categorie) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_widget(form.submit, {'attr': {'class': 'btn btn-primary'}}) }}
+    </div>
+
+    {{ form_end(form) }}
+
+    {% if totalAmount is defined %}
+        <div class="alert alert-info">
+            Coût total pour {{ nights }} nuits: {{ totalAmount }}€.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -9,20 +9,27 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\FormBuilderInterface;
 
 use App\Outils\FormTypes\AtelierType;
 use App\Outils\FormTypes\VacationType;
 use App\Outils\FormTypes\ThemeType;
 use App\Outils\AtelierOutils;
+use App\Repository\VacationRepository;
 
 // ---------------------------------------------------------------------------------------------------
 
 class AtelierController extends AbstractController {
 
     private $atelierOutils;
+    private $vacationRepository;
 
-    public function __construct (AtelierOutils $atelierOutils) {
+    public function __construct (AtelierOutils $atelierOutils, VacationRepository $vacationRepository) {
         $this->atelierOutils = $atelierOutils;
+        $this->vacationRepository = $vacationRepository;
     }
 
     #[Route('/admin/add_data', name: 'app_AddData')]
@@ -171,4 +178,73 @@ class AtelierController extends AbstractController {
             'form' => $form->createView(),
         ]);
     }
+
+
+    #[Route('/admin/modifVacation', name: 'app_ModifVacation')]
+    public function modifVacation(Request $request, AtelierRepository $atelierRepository, VacationRepository $vacationRepository) {
+        $ateliers = $atelierRepository->findAll();
+        $atelierChoices = [];
+        foreach ($ateliers as $atelier) {
+            $atelierChoices[$atelier->getLibelle()] = $atelier->getId();
+        }
+    
+        $form = $this->createFormBuilder()
+            ->add('atelier', ChoiceType::class, [
+                'choices' => $atelierChoices,
+                'label' => false
+            ])
+            ->add('confirm', SubmitType::class, ['label' => 'Confirmer'])
+            ->getForm();
+    
+        $form->handleRequest($request);
+    
+        $vacationForms = [];
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $selectedAtelierId = $form->get('atelier')->getData();
+            $atelier = $atelierRepository->find($selectedAtelierId);
+            $vacations = $atelier->getVacations();
+        
+            // Dynamically create a form for each vacation
+            foreach ($vacations as $vacation) {
+                $vacationForm = $this->createFormBuilder($vacation)
+                    ->add('dateHeureDebut', DateType::class, [
+                        'data' => $vacation->getDateHeureDebut() ? new \DateTime($vacation->getDateHeureDebut()) : null,
+                        'widget' => 'single_text'
+                    ])
+                    ->add('dateHeureFin', DateType::class, [
+                        'data' => $vacation->getDateHeureFin() ? new \DateTime($vacation->getDateHeureFin()) : null,
+                        'widget' => 'single_text'
+                    ])
+                    ->getForm();
+    
+                $vacationForms[] = $vacationForm->createView();
+            }
+        }
+    
+        return $this->render('admin/modifVacation.html.twig', [
+            'form' => $form->createView(),
+            'vacationForms' => $vacationForms  // Ensure it's passed even if empty
+        ]);
+    }
+
+
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $builder
+            ->add('dateHeureDebut', DateTimeType::class, [
+                'widget' => 'single_text', // Use single text input
+                'input'  => 'datetime',   // Ensure the input is a DateTime object
+                'format' => 'yyyy-MM-dd\'T\'HH:mm:ss', // ISO 8601 format
+                'attr' => ['class' => 'form-control datetime-picker']
+            ])
+            ->add('dateHeureFin', DateTimeType::class, [
+                'widget' => 'single_text',
+                'input'  => 'datetime',
+                'format' => 'yyyy-MM-dd\'T\'HH:mm:ss',
+                'attr' => ['class' => 'form-control datetime-picker']
+            ]);
+    }
+    
+    
 }
