@@ -21,6 +21,7 @@ use App\Repository\ProposerRepository;
 use App\Repository\VacationRepository;
 use App\Repository\AtelierRepository;
 use App\Repository\HotelRepository;
+use App\Repository\RestaurationRepository;
 use App\Repository\CategorieChambreRepository;
 use App\Service\MailerService;
 use App\Entity\Compte;
@@ -247,7 +248,7 @@ class BaseController extends AbstractController
      * Inscris un licencié aux congrès
      */
     #[Route('/inscription-congres', name: 'app_inscription_congres')]
-    public function inscriptionCongres(Request $request, AtelierRepository $atelierRepository, HotelRepository $hotelRepository, ProposerRepository $proposerRepository, CategorieChambreRepository $categorieChambreRepository): Response
+    public function inscriptionCongres(Request $request, AtelierRepository $atelierRepository, HotelRepository $hotelRepository, ProposerRepository $proposerRepository, CategorieChambreRepository $categorieChambreRepository, RestaurationRepository $restaurationRepository) : Response
     {
 
         // Vérifie que l'utilisateur à le rôle d'inscrit
@@ -258,6 +259,7 @@ class BaseController extends AbstractController
 
         $ateliers = $atelierRepository->findAll();
         $hotels = $hotelRepository->findAll();
+        $restaurations = $restaurationRepository->findAll();
         $categorieChambres = $categorieChambreRepository->findAll();
 
         // Liste les ateliers présents en bdd
@@ -278,6 +280,12 @@ class BaseController extends AbstractController
             $categorieChoices[$categorie->getLibelleCategorie()] = $categorie->getId();
         }
 
+        // Récupère les restaurations
+        $restauraionsChoices = [];
+        foreach ($restaurations as $restauration) {
+            $restauraionsChoices[$restauration->getTypeRepas()] = $restauration->getId();
+        }
+
         // Création du formulaire
         $form = $this->createFormBuilder()
 
@@ -292,6 +300,7 @@ class BaseController extends AbstractController
             ->add('dateNuiteeF', DateType::class, ['widget' => 'single_text', 'label' => 'Choisir la date de fin de nuitée'])
             ->add('hotel', ChoiceType::class, ['choices' => $hotelChoices, 'label' => 'Choisir votre hôtel'])
             ->add('categorie', ChoiceType::class, ['choices' => $categorieChoices, 'label' => 'Choisir la catégorie de chambre'])
+            ->add('restauration', ChoiceType::class, ['choices' => $restauraionsChoices, 'label' => 'Choisir la restauration'])
             ->add('submit', SubmitType::class, ['label' => 'Enregistrer l\'inscription'])
             ->getForm();
 
@@ -304,10 +313,14 @@ class BaseController extends AbstractController
             $datenuiteed = $data['dateNuiteeD'];
             $datenuiteef = $data['dateNuiteeF'];
             $categorieId = $data['categorie'];
+            $restaurationId = $data['restauration'];
             $hotelId = $data['hotel'];
 
             // Récupère l'hotel
             $hotel = $hotelRepository->find($hotelId);
+
+            // Récupère la restauration
+            $restauration = $restaurationRepository->find($restaurationId);
 
             // Récuper la catégorie
             $categorie = $categorieChambreRepository->find($categorieId);
@@ -363,6 +376,7 @@ class BaseController extends AbstractController
             $messageEmail = "Merci pour votre inscription. Voici le résumé de votre inscription au congrès :\n";
             $messageEmail .= "Email : " . $user->getEmail() . "\n";
             $messageEmail .= "Hotel : " . $hotel->getPnom() . "\n";
+            $messageEmail .= "Hotel : " . $restauration->getTypeRepas() . "\n";
             $messageEmail .= "Catégorie de chambre : " . $categorie->getLibelleCategorie() . "\n";
             $messageEmail .= "Nombre de nuits : " . $nights . "\n";
             $messageEmail .= "Ateliers choisis : " . $listeAteliers . "\n";

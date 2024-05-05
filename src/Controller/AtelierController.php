@@ -205,7 +205,7 @@ class AtelierController extends AbstractController {
             $atelier = $atelierRepository->find($selectedAtelierId);
             $vacations = $atelier->getVacations();
         
-            // Dynamically create a form for each vacation
+            // Crée un formulaire
             foreach ($vacations as $vacation) {
                 $vacationForm = $this->createFormBuilder($vacation)
                     ->add('dateHeureDebut', DateType::class, [
@@ -224,7 +224,7 @@ class AtelierController extends AbstractController {
     
         return $this->render('admin/modifVacation.html.twig', [
             'form' => $form->createView(),
-            'vacationForms' => $vacationForms  // Ensure it's passed even if empty
+            'vacationForms' => $vacationForms
         ]);
     }
 
@@ -233,9 +233,9 @@ class AtelierController extends AbstractController {
     {
         $builder
             ->add('dateHeureDebut', DateTimeType::class, [
-                'widget' => 'single_text', // Use single text input
-                'input'  => 'datetime',   // Ensure the input is a DateTime object
-                'format' => 'yyyy-MM-dd\'T\'HH:mm:ss', // ISO 8601 format
+                'widget' => 'single_text',
+                'input'  => 'datetime',
+                'format' => 'yyyy-MM-dd\'T\'HH:mm:ss',
                 'attr' => ['class' => 'form-control datetime-picker']
             ])
             ->add('dateHeureFin', DateTimeType::class, [
