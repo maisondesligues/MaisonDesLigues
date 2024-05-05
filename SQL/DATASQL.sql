@@ -123,6 +123,10 @@ select * from hotel;
 select * from theme;
 select * from proposer;
 
+INSERT INTO restauration (type_repas) VALUES ('repas accompagnant');
+INSERT INTO restauration (type_repas) VALUES ('repas famille');
+
+
 insert into vacation (date_heure_debut, date_heure_fin) values('2024-09-08 11:00:00', '2024-09-08 12:30:00');
 insert into vacation (date_heure_debut, date_heure_fin) values('2024-09-08 14:00:00', '2024-09-08 15:30:00');
 insert into vacation (date_heure_debut, date_heure_fin) values('2024-09-08 16:00:00', '2024-09-08 17:30:00');
