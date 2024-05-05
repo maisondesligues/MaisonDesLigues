@@ -579,6 +579,9 @@ class BaseController extends AbstractController
             $formData = $form->getData();
             $licenceNumber = $formData['licence_number'];
             $adresseMail = $formData['adresse_mail'];
+            
+            // génère un token aléatoire
+            $token = bin2hex(random_bytes(16));
 
             // Si aucune licence et adresse mail n'est rentrée ---------------------------------------------------------------------------------
             if (!$licenceNumber && !$adresseMail) {
@@ -590,9 +593,6 @@ class BaseController extends AbstractController
 
             // Si l'un des deux ou les deux est rentré -----------------------------------------------------------------------------------------------
             else {
-
-                // génère un token aléatoire
-                $token = bin2hex(random_bytes(16));
 
                 // Si l'adresse mail est entrée ------------------------------------------------------------------------------------------
                 if ($adresseMail) {
@@ -698,12 +698,8 @@ class BaseController extends AbstractController
      * Contient un token unique et un numéro de licencié en lien
      */
     #[Route('/renitialiserMotDePasse', name: 'renitialiser_motdepasse')]
-    public function resetPassword($token, Request $request): Response
+    public function resetPassword(Request $request): Response
     {
-
-        // Récupère le token entré dans l'URL
-        $token = $request->query->get('token');
-
         // Récupère le numéro de licencié entré dans l'URL
         $numLicencie = $request->query->get('numLicencie');
 
