@@ -144,6 +144,12 @@
     </div>
 
     <div class="form-group">
+        {{ form_label(form.restauration) }}
+        {{ form_widget(form.restauration, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.restauration) }}
+    </div>
+
+    <div class="form-group">
         {{ form_widget(form.submit, {'attr': {'class': 'btn btn-primary'}}) }}
     </div>
 

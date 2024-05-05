@@ -376,7 +376,7 @@ class BaseController extends AbstractController
             $messageEmail = "Merci pour votre inscription. Voici le résumé de votre inscription au congrès :\n";
             $messageEmail .= "Email : " . $user->getEmail() . "\n";
             $messageEmail .= "Hotel : " . $hotel->getPnom() . "\n";
-            $messageEmail .= "Hotel : " . $restauration->getTypeRepas() . "\n";
+            $messageEmail .= "Restauration : " . $restauration->getTypeRepas() . "\n";
             $messageEmail .= "Catégorie de chambre : " . $categorie->getLibelleCategorie() . "\n";
             $messageEmail .= "Nombre de nuits : " . $nights . "\n";
             $messageEmail .= "Ateliers choisis : " . $listeAteliers . "\n";
